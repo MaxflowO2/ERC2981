@@ -1,0 +1,39 @@
+{
+  "name": "cli-util",
+  "version": "1.1.27",
+  "description": "Utility functions for the cli toolkit",
+  "author": "muji <noop@xpm.io>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/freeformsystems/cli-util"
+  },
+  "bugs": {
+    "url": "https://github.com/freeformsystems/cli-util/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/freeformsystems/cli-util/blob/master/LICENSE"
+    }
+  ],
+  "keywords": [
+    "cli",
+    "string",
+    "util"
+  ],
+  "dependencies": {
+    "cli-regexp": "~0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "~1.17.0",
+    "chai": "~1.8.1",
+    "istanbul": "~0.2.4"
+  },
+  "engine": [
+    "node >= 0.10.21"
+  ],
+  "scripts": {
+    "test": "NODE_ENV=test istanbul cover _mocha -- -u bdd --recursive --reporter list -A test/spec"
+  },
+  "config": {}
+}
