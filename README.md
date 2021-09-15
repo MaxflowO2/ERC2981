@@ -21,18 +21,21 @@
 
 ### Basing EIP-2981 into ERC-2981
 After using https://eips.ethereum.org/EIPS/eip-2981 as the final standard, I have taken IERC2981.sol and forged this into ERC2981.sol
+
 ```mapping(uint256 => address) receiver```
 * Sets a mapping that can be called with royaltyInfo(uint256 _tokenId, uint256, _salePrice)
 * Set by _setReceiver
+
 ```mapping(uint256 => uint256) royaltyPercentage```
 * Sets a mapping that can be called with royaltyInfo(uint256 _tokenId, uint256, _salePrice)
 * Set by _setRoyaltyPercentage
+
 ```bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a```
 * Passed the value _INTERFACE_ID_ERC2981 in the constructor under _registerInterface(_INTERFACE_ID_ERC2981)
 * Functionality is set with import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol"
 * Makes override on supportInterface unneeded
 
-```  function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
+```function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
     Receiver = receiver[_tokenId];
     royaltyAmount = _salePrice.div(100).mul(royaltyPercentage[_tokenId]);
   }```
