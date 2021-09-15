@@ -36,9 +36,9 @@ After using https://eips.ethereum.org/EIPS/eip-2981 as the final standard, I hav
 * Makes override on supportInterface unneeded
 
 ```function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
-    Receiver = receiver[_tokenId];
-    royaltyAmount = _salePrice.div(100).mul(royaltyPercentage[_tokenId]);
-  }```
-*This is the mapping being used, per token
+  Receiver = receiver[_tokenId];
+  royaltyAmount = _salePrice.div(100).mul(royaltyPercentage[_tokenId]);
+}```
+* This is the mapping being used, per token
 
 This is the cleanest solution I could come up with
