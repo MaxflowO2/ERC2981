@@ -22,7 +22,7 @@ abstract contract ERC2981 is IERC2981, ERC165Storage {
   bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
 
   // Mappings _tokenID -> values
-  mapping(uint256 => address) receiver;
+  mapping(uint256 => address) receiverById;
   mapping(uint256 => uint256) royaltyPercentage;
 
   constructor() {
@@ -34,7 +34,7 @@ abstract contract ERC2981 is IERC2981, ERC165Storage {
 
   // Set to be internal function _setReceiver
   function _setReceiver(uint256 _tokenId, address _address) internal {
-    receiver[_tokenId] = _address;
+    receiverById[_tokenId] = _address;
   }
 
   // Set to be internal function _setRoyaltyPercentage
@@ -43,9 +43,14 @@ abstract contract ERC2981 is IERC2981, ERC165Storage {
   }
 
   // Override for royaltyInfo(uint256, uint256)
-  // uses SafeMath for uint256
-  function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
-    Receiver = receiver[_tokenId];
+  function royaltyInfo(
+    uint256 _tokenId,
+    uint256 _salePrice
+  ) external view override(IERC2981) returns (
+    address receiver,
+    uint256 royaltyAmount
+  ) {
+    receiver = receiverById[_tokenId];
 
     // This sets percentages by price * percentage / 100
     royaltyAmount = _salePrice * royaltyPercentage[_tokenId] / 100;
