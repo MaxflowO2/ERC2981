@@ -13,12 +13,10 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "./IERC2981.sol";
 
 abstract contract ERC2981 is IERC2981, ERC165Storage {
-  using SafeMath for uint256;
 
   // Bytes4 Code for EIP-2981
   bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
@@ -48,6 +46,8 @@ abstract contract ERC2981 is IERC2981, ERC165Storage {
   // uses SafeMath for uint256
   function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
     Receiver = receiver[_tokenId];
-    royaltyAmount = _salePrice.div(100).mul(royaltyPercentage[_tokenId]);
+
+    // This sets percentages by price * percentage / 100
+    royaltyAmount = _salePrice * royaltyPercentage[_tokenId] / 100;
   }
 }
