@@ -1,45 +1,48 @@
 # ERC-2981 Royalties:
 
 ### Basing EIP-2981 into ERC-2981
-After using https://eips.ethereum.org/EIPS/eip-2981 as the final standard, I have taken IERC2981.sol and forged this into ERC2981.sol
+After using https://eips.ethereum.org/EIPS/eip-2981 as the final standard, I have taken IERC2981.sol and forged this into ERC2981.sol and ERC2981Collection.sol
 
-```mapping(uint256 => address) receiver```
-* Sets a mapping that can be called with royaltyInfo(uint256 _tokenId, uint256, _salePrice)
-* Set by _setReceiver
+#### ERC2981.sol (for public minters)
+By using a Struct we are attempting to use closer to a 21k gas fee (full 2^256 slot).
 
-```mapping(uint256 => uint256) royaltyPercentage```
-* Sets a mapping that can be called with royaltyInfo(uint256 _tokenId, uint256, _salePrice)
-* Set by _setRoyaltyPercentage
+mappedRoyalties.receiver - address for royalties<br>
+mappedRoyalties.percentage - uint for pecentage (yes can change to permille)<br>
 
-```bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a```
-* Passed the value _INTERFACE_ID_ERC2981 in the constructor under _registerInterface(_INTERFACE_ID_ERC2981)
-* Functionality is set with import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol"
-* Makes override on supportInterface unneeded
+mapping(uint256 => mappedRoyalties) royalty - mapping per tokenId
 
-```
-function royaltyInfo(uint256 _tokenId, uint256 _salePrice) external view override(IERC2981) returns (address Receiver, uint256 royaltyAmount) {
-  Receiver = receiver[_tokenId];
-  royaltyAmount = _salePrice.div(100).mul(royaltyPercentage[_tokenId]);
-}
-```
-* This is the mapping being used, per token
+_setRoyalties(uint, address, uint) internal - sets the mapping
 
-This is the cleanest solution I could come up with
+royaltyInfo(uint, address) - override of IERC2981.sol
+* returns mappedRoyalties.receiver
+* returns value to be sent from sale
+
+#### ERC2981Collection.sol (for public minters)
+Designed more for x amount of minters for an artist collection.<br>
+By using 2 variables, royaltyAddress and royaltyPercent more gas intensive, but should be a one time setting.
+
+_setRoyalties(address, uint) internal - sets the two variable
+
+royaltyInfo(uint, address) - override of IERC2981.sol
+* returns royaltyAddress
+* returns value to be sent from sale
 
 ### Requirements: (for testing)
 1. Node.js - Latest 
 2. NPM - Latest
-3. Truffle - Latest
-4. hdwallet-provider - Latest
-5. truffle-plugin-verify - Latest
+3. Truffle - Latest (npm install -g truffle)
+4. hdwallet-provider - Latest (npm install -g @truffle/hdwallet-provider)
+5. truffle-plugin-verify - Latest (npm install -g truffle-plugin-verify)
 6. Infura API-Key
-7. Etherscan API-Key
+7. Ftmscan API-Key 
 8. mnemonic for generation of Private Key
 9. .env setup:
   * MNEMONIC=""
   * INFURA_API_KEY=
-  * ETHERSCAN_API_KEY=
-10. dontenv - Latest
+  * FTMSCAN_API_KEY=
+10. dotenv - Latest (npm install -g dotenv)
 11. git - Latest (if you plan on developing with us)
 12. create .gitignore
   * add .env
+
+### Currently under testing phase
