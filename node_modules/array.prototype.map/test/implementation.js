@@ -1,5 +1,5 @@
-var map = require('../implementation');
-var bind = require('function-bind');
+var implementation = require('../implementation');
+var callBind = require('call-bind');
 var test = require('tape');
 var runTests = require('./tests');
 
@@ -7,8 +7,8 @@ var hasStrictMode = require('has-strict-mode')();
 
 test('as a function', function (t) {
 	t.test('bad array/this value', function (st) {
-		st['throws'](bind.call(map, null, undefined, 'a'), TypeError, 'undefined is not an object');
-		st['throws'](bind.call(map, null, null, 'a'), TypeError, 'null is not an object');
+		st['throws'](callBind(implementation, null, undefined, 'a'), TypeError, 'undefined is not an object');
+		st['throws'](callBind(implementation, null, null, 'a'), TypeError, 'null is not an object');
 		st.end();
 	});
 
@@ -17,7 +17,7 @@ test('as a function', function (t) {
 
 		var context = 'x';
 
-		map.call(
+		implementation.call(
 			'f',
 			function () {
 				st.equal(typeof this, 'object');
@@ -29,7 +29,7 @@ test('as a function', function (t) {
 		st.test('strict mode', { skip: !hasStrictMode }, function (sst) {
 			sst.plan(2);
 
-			map.call(
+			implementation.call(
 				'f',
 				function () {
 					'use strict';
@@ -45,7 +45,7 @@ test('as a function', function (t) {
 		st.end();
 	});
 
-	runTests(bind.call(Function.call, map), t);
+	runTests(callBind(implementation), t);
 
 	t.end();
 });

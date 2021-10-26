@@ -6,6 +6,8 @@ var debug = require('object-inspect');
 var getIterator = require('es-get-iterator');
 var iterate = require('..');
 
+var canDistinguishSparseFromUndefined = 0 in [undefined]; // IE 6 - 8 have a bug where this returns false
+
 function testIteration(t, iterable, expected, message) {
 	t.deepEqual(iterate(getIterator(iterable)), expected, 'no callback: ' + message);
 	var values = [];
@@ -33,9 +35,12 @@ test('arrays', function (t) {
 	], function (arr) {
 		testIteration(t, arr, arr, debug(arr));
 	});
-	var sparse = [1, , 3]; // eslint-disable-line no-sparse-arrays
-	var actual = testIteration(t, sparse, [1, undefined, 3], debug(sparse));
-	t.ok(1 in actual, 'actual is not sparse');
+	t.test('sparse arrays', { skip: !canDistinguishSparseFromUndefined }, function (st) {
+		var sparse = [1, , 3]; // eslint-disable-line no-sparse-arrays
+		var actual = testIteration(st, sparse, [1, undefined, 3], debug(sparse));
+		st.ok(1 in actual, 'actual is not sparse');
+		st.end();
+	});
 
 	t.end();
 });

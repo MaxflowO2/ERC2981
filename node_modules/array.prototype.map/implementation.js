@@ -1,15 +1,17 @@
 'use strict';
 
-var ArraySpeciesCreate = require('es-abstract/2020/ArraySpeciesCreate');
-var Call = require('es-abstract/2020/Call');
-var CreateDataPropertyOrThrow = require('es-abstract/2020/CreateDataPropertyOrThrow');
-var Get = require('es-abstract/2020/Get');
-var HasProperty = require('es-abstract/2020/HasProperty');
-var IsCallable = require('es-abstract/2020/IsCallable');
-var ToUint32 = require('es-abstract/2020/ToUint32');
-var ToObject = require('es-abstract/2020/ToObject');
-var ToString = require('es-abstract/2020/ToString');
+var ArraySpeciesCreate = require('es-abstract/2021/ArraySpeciesCreate');
+var Call = require('es-abstract/2021/Call');
+var CreateDataPropertyOrThrow = require('es-abstract/2021/CreateDataPropertyOrThrow');
+var Get = require('es-abstract/2021/Get');
+var HasProperty = require('es-abstract/2021/HasProperty');
+var IsCallable = require('es-abstract/2021/IsCallable');
+var ToUint32 = require('es-abstract/2021/ToUint32');
+var ToObject = require('es-abstract/2021/ToObject');
+var ToString = require('es-abstract/2021/ToString');
+
 var callBound = require('call-bind/callBound');
+
 var isString = require('is-string');
 
 // Check failure of by-index access of string characters (IE < 9) and failure of `0 in boxedString` (Rhino)

@@ -13,33 +13,22 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "./IERC2981.sol";
 
-abstract contract ERC2981 is IERC2981, ERC165Storage {
+abstract contract ERC2981 is IERC2981 {
 
-  // Bytes4 Code for EIP-2981
-  bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
-
-  // Mappings _tokenID -> values
-  mapping(uint256 => address) receiverById;
-  mapping(uint256 => uint256) royaltyPercentage;
-
-  constructor() {
-
-    // Using ERC165Storage set EIP-2981
-    _registerInterface(_INTERFACE_ID_ERC2981);
-
+  // Mapping Struct for Royalties
+  struct mappedRoyalties {
+    address receiver;
+    uint256 percentage;
   }
 
-  // Set to be internal function _setReceiver
-  function _setReceiver(uint256 _tokenId, address _address) internal {
-    receiverById[_tokenId] = _address;
-  }
+  // Mapping
+  mapping(uint256 => mappedRoyalties) royalty;
 
-  // Set to be internal function _setRoyaltyPercentage
-  function _setRoyaltyPercentage(uint256 _tokenId, uint256 _royaltyPercentage) internal {
-    royaltyPercentage[_tokenId] = _royaltyPercentage;
+  // Set to be internal function _setRoyalties
+  function _setRoyalties(uint256 _tokenId, address _receiver, uint256 _percentage) internal {
+    royalty[_tokenId] = mappedRoyalties(_receiver, _percentage);
   }
 
   // Override for royaltyInfo(uint256, uint256)
@@ -50,9 +39,9 @@ abstract contract ERC2981 is IERC2981, ERC165Storage {
     address receiver,
     uint256 royaltyAmount
   ) {
-    receiver = receiverById[_tokenId];
+    receiver = royalty[_tokenId].receiver;
 
     // This sets percentages by price * percentage / 100
-    royaltyAmount = _salePrice * royaltyPercentage[_tokenId] / 100;
+    royaltyAmount = _salePrice * royalty[_tokenId].percentage / 100;
   }
 }

@@ -1,12 +1,13 @@
 {
   "dependencies": {
-    "@openzeppelin/contracts": "4.2.0",
+    "@openzeppelin/contracts": "^4.3.2",
     "@pancakeswap-libs/pancake-swap-core": "^0.1.0",
     "@pancakeswap/pancake-swap-lib": "^0.0.4",
     "@pancakeswap2/pancake-swap-core": "^0.1.0",
     "@theanthill/pancake-swap-periphery": "^1.1.0-beta.1",
-    "@truffle/hdwallet-provider": "^1.0.37",
+    "@truffle/hdwallet-provider": "^1.5.1",
     "dotenv": "^10.0.0",
+    "truffle": "^5.4.16",
     "truffle-hdwallet-provider": "^1.0.6",
     "web3": "^1.5.1"
   },

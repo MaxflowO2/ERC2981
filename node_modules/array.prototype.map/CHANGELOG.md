@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.4](https://github.com/es-shims/Array.prototype.map/compare/v1.0.3...v1.0.4) - 2021-10-01
+
+### Commits
+
+- [actions] use `node/install` instead of `node/run`; use `codecov` action [`5f6bb0a`](https://github.com/es-shims/Array.prototype.map/commit/5f6bb0afa3645cc08cf8ea86a609e54c1efe2e00)
+- [Tests] use `call-bind` instead of `function-bind` [`cc1e8be`](https://github.com/es-shims/Array.prototype.map/commit/cc1e8be8f569d94c435cc77aa95c92fa286acf25)
+- [Deps] update `es-abstract`, `is-string` [`485a225`](https://github.com/es-shims/Array.prototype.map/commit/485a2254c0aced3e888035659b33dabc5ae04b71)
+- [readme] remove travis badge [`b19a58c`](https://github.com/es-shims/Array.prototype.map/commit/b19a58cac0f354a18cdd53c2b23fc2eed5895701)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `@es-shims/api`, `aud`, `auto-changelog`, `tape` [`9c41b47`](https://github.com/es-shims/Array.prototype.map/commit/9c41b47b23bb06e5b5b79b8c830822beedade0aa)
+- [Dev Deps] update `eslint`, `@ljharb/eslint-config`, `aud`, `functions-have-names`, `has-strict-mode`, `tape` [`1c9589c`](https://github.com/es-shims/Array.prototype.map/commit/1c9589cceaefe2930b8ce01a7639decd80b49d39)
+- [actions] update workflows [`c52989d`](https://github.com/es-shims/Array.prototype.map/commit/c52989d548d9c65705e80dc630ca1688b58c7403)
+- [readme] add github actions/codecov badges [`94d48dc`](https://github.com/es-shims/Array.prototype.map/commit/94d48dc111f97426f54076b7341883ccab86eec3)
+- [actions] update workflows [`12d87af`](https://github.com/es-shims/Array.prototype.map/commit/12d87afe4f1efd5e758367eee21ecee628f41738)
+- [Tests] increase coverage [`2eb9a09`](https://github.com/es-shims/Array.prototype.map/commit/2eb9a0983daeae85dc450f307789018138329e7b)
+- [Dev Deps] update `eslint`, `tape` [`c7b28ab`](https://github.com/es-shims/Array.prototype.map/commit/c7b28ab73951f428f2919d479df30b7506802896)
+- [Deps] update `call-bind`, `es-abstract` [`39b103e`](https://github.com/es-shims/Array.prototype.map/commit/39b103ea6f8ede7ec0990af02b7a5235c408a2e4)
+- [meta] use `prepublishOnly` script for npm 7+ [`75edba9`](https://github.com/es-shims/Array.prototype.map/commit/75edba96d1b550fa53c727eaebe5b942be8af338)
+- [Deps] update `es-abstract` [`eae3b29`](https://github.com/es-shims/Array.prototype.map/commit/eae3b291fb42246a4615aa27bd3b816e8c8e94ec)
+
 ## [v1.0.3](https://github.com/es-shims/Array.prototype.map/compare/v1.0.2...v1.0.3) - 2020-11-19
 
 ### Commits
