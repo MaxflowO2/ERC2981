@@ -23,10 +23,10 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Developer.sol";
+import "./access/Developer.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981Collection.sol";
-import "./IMAX721.sol";
+import "./interface/IMAX721.sol";
 
 contract ERCv2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage, Developer, Ownable {
   using Counters for Counters.Counter;
