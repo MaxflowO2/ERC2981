@@ -60,16 +60,22 @@ contract ERC721v2CollectionWhitelist is ERC721, ERC2981Collection, IMAX721, IMAX
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
   bytes4 private constant _INTERFACE_ID_ERC2981 = 0x2a55205a;
+  bytes4 private constant _INTERFACE_ID_ERC2981Collection = 0x6af56a00;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x481c20a6;
   bytes4 private constant _INTERFACE_ID_IMAX721Whitelist = 0x22699a34;
+  bytes4 private constant _INTERFACE_ID_Whitelist = 0xaab9e3bd;
+  bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
 
   constructor() ERC721("ERC", "721") {
 
     // ECR165 Interfaces Supported
     _registerInterface(_INTERFACE_ID_ERC721);
     _registerInterface(_INTERFACE_ID_ERC2981);
+    _registerInterface(_INTERFACE_ID_ERC2981Collection);
     _registerInterface(_INTERFACE_ID_IMAX721);
     _registerInterface(_INTERFACE_ID_IMAX721Whitelist);
+    _registerInterface(_INTERFACE_ID_Whitelist);
+    _registerInterface(_INTERFACE_ID_Developer);
   }
 
 /***

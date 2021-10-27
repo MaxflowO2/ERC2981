@@ -32,6 +32,14 @@ import "@openzeppelin/contracts/utils/Context.sol";
  * the developer.
  */
 abstract contract Developer is Context {
+
+    // ERC165
+    // developer() => 0xca4b208b
+    // renounceDeveloper() => 0xad6d9c17
+    // transferDeveloper(address) => 0xb671f4ea
+    // _transferDeveloper(address) => 0x82dd18b8
+    // Developer => 0x538a50ce
+
     address private _developer;
 
     event DeveloperTransferred(address indexed previousDeveloper, address indexed newDeveloper);
@@ -46,6 +54,7 @@ abstract contract Developer is Context {
     /**
      * @dev Returns the address of the current developer.
      */
+    // developer() => 0xca4b208b
     function developer() public view virtual returns (address) {
         return _developer;
     }
@@ -65,6 +74,7 @@ abstract contract Developer is Context {
      * NOTE: Renouncing developership will leave the contract without an developer,
      * thereby removing any functionality that is only available to the developer.
      */
+    // renounceDeveloper() => 0xad6d9c17
     function renounceDeveloper() public virtual onlyDev {
         _transferDeveloper(address(0));
     }
@@ -73,6 +83,7 @@ abstract contract Developer is Context {
      * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
      * Can only be called by the current developer.
      */
+    // transferDeveloper(address) => 0xb671f4ea
     function transferDeveloper(address newDeveloper) public virtual onlyDev {
         require(newDeveloper != address(0), "Developer: new developer is the zero address");
         _transferDeveloper(newDeveloper);
@@ -82,6 +93,7 @@ abstract contract Developer is Context {
      * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
      * Internal function without access restriction.
      */
+    // _transferDeveloper(address) => 0x82dd18b8
     function _transferDeveloper(address newDeveloper) internal virtual {
         address oldDeveloper = _developer;
         _developer = newDeveloper;
