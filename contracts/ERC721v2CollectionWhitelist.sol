@@ -12,6 +12,13 @@
  *    ██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
  *    ╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
  *     ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+ *
+ *    ██╗    ██╗██╗  ██╗██╗████████╗███████╗██╗     ██╗███████╗████████╗
+ *    ██║    ██║██║  ██║██║╚══██╔══╝██╔════╝██║     ██║██╔════╝╚══██╔══╝
+ *    ██║ █╗ ██║███████║██║   ██║   █████╗  ██║     ██║███████╗   ██║   
+ *    ██║███╗██║██╔══██║██║   ██║   ██╔══╝  ██║     ██║╚════██║   ██║   
+ *    ╚███╔███╔╝██║  ██║██║   ██║   ███████╗███████╗██║███████║   ██║   
+ *     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚═╝╚══════╝   ╚═╝   
  * Written by MaxFlowO2, Senior Developer and Partner of G&M² Labs
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
@@ -27,16 +34,20 @@ import "./access/Developer.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
+import "./modules/Whitelist.sol";
+import "./interface/IMAX721Whitelist.sol";
 
-contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage, Developer, Ownable {
+contract ERC721v2CollectionWhitelist is ERC721, ERC2981Collection, IMAX721, IMAX721Whitelist, Whitelist, ERC165Storage, Developer, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
   uint256 private mintFees;
   uint256 private mintSize;
   uint256 private teamMintSize;
+  uint256 private whitelistEndNumber;
   string private base;
   bool private enableMinter;
+  bool private enableWhiteList;
 
   event UpdatedBaseURI(string _old, string _new);
   event UpdatedMintFees(uint256 _old, uint256 _new);
@@ -44,6 +55,7 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
   event UpdatedMintStatus(bool _old, bool _new);
   event UpdatedRoyalties(address newRoyaltyAddress, uint256 newPercentage);
   event UpdatedTeamMintSize(uint256 _old, uint256 _new);
+  event UpdatedWhitelistStatus(bool _old, bool _new);
 
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -67,12 +79,23 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
 
   function publicMint(uint256 amount) public payable {
     require(enableMinter, "Minter not active");
-    require(msg.value == mintFees * amount, "Wrong amount of Native Token");
-    require(_tokenIdCounter.current() + amount < mintSize, "Can not mint that many");
-    // Send payment line
-    for (uint i = 0; i < amount; i++) {
-      _safeMint(msg.sender, _tokenIdCounter.current());
-      _tokenIdCounter.increment();
+    if(enableWhiteList) {
+      require(isWhitelist[msg.sender]);
+      require(msg.value == mintFees * amount, "Wrong amount of Native Token");
+      require(_tokenIdCounter.current() + amount < mintSize, "Can not mint that many");
+      // Send payment line
+      for (uint i = 0; i < amount; i++) {
+        _safeMint(msg.sender, _tokenIdCounter.current());
+        _tokenIdCounter.increment();
+      }
+    } else {
+      require(msg.value == mintFees * amount, "Wrong amount of Native Token");
+      require(_tokenIdCounter.current() + amount < mintSize, "Can not mint that many");
+      // Send payment line
+      for (uint i = 0; i < amount; i++) {
+        _safeMint(msg.sender, _tokenIdCounter.current());
+        _tokenIdCounter.increment();
+      }
     }
   }
 
@@ -134,6 +157,40 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     emit UpdatedMintStatus(old, enableMinter);
   }
 
+  // @notice this will enable whitelist or "if" in publicMint()
+  function enableWhitelist() public onlyOwner {
+    bool old = enableWhiteList;
+    enableWhiteList = true;
+    emit UpdatedWhitelistStatus(old, enableWhiteList);
+  }
+
+  // @notice this will disable whitelist or "else" in publicMint()
+  function disableWhitelist() public onlyOwner {
+    bool old = enableWhiteList;
+    enableWhiteList = false;
+    emit UpdatedWhitelistStatus(old, enableWhiteList);
+  }
+
+  // @notice adding functions to mapping
+  function addWhitelistBatch(address [] memory _addresses) public onlyOwner {
+    _addWhitelistBatch(_addresses);
+  }
+
+  // @notice adding functions to mapping
+  function addWhitelist(address _address) public onlyOwner {
+    _addWhitelist(_address);
+  }
+
+  // @notice removing functions to mapping
+  function removeWhitelistBatch(address [] memory _addresses) public onlyOwner {
+    _removeWhitelistBatch(_addresses);
+  }
+
+  // @notice removing functions to mapping
+  function removeWhitelist(address _address) public onlyOwner {
+    _removeWhitelist(_address);
+  }
+
 /***
  *    ██████╗ ███████╗██╗   ██╗
  *    ██╔══██╗██╔════╝██║   ██║
@@ -191,6 +248,11 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     return enableMinter;
   }
 
+  // @notice will return whitelist status of Minter
+  function whitelistStatus() external view override(IMAX721Whitelist) returns (bool) {
+    return enableWhiteList;
+  }
+
   // @notice will return minting fees
   function minterFees() external view override(IMAX721) returns (uint256) {
     return mintFees;
@@ -218,5 +280,10 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
   // @notice will return current token count
   function minterCurrentCount() external view override(IMAX721) returns (uint256) {
     return _tokenIdCounter.current();
+  }
+
+  // @notice will return whitelist end number
+  function whitelistEnd() external view override(IMAX721Whitelist) returns (uint256) {
+    return whitelistEndNumber;
   }
 }

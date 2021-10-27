@@ -23,7 +23,7 @@ pragma solidity >=0.8.0 <0.9.0;
 abstract contract Whitelist {
 
   // set contract mapping
-  mapping (address => bool) isWhiteList;
+  mapping (address => bool) isWhitelist;
 
   // only event needed
   event ChangeToWhitelist(address _address, bool update);
@@ -31,26 +31,26 @@ abstract contract Whitelist {
   // adding functions to mapping
   function _addWhitelistBatch(address [] memory _addresses) internal {
     for (uint i = 0; i < _addresses.length; i++) {
-      isWhiteList[_addresses[i]] = true;
-      emit ChangeToWhitelist(_addresses[i], isWhiteList[_addresses[i]]);
+      isWhitelist[_addresses[i]] = true;
+      emit ChangeToWhitelist(_addresses[i], isWhitelist[_addresses[i]]);
     }
   }
 
   function _addWhitelist(address _address) internal {
-    isWhiteList[_address] = true;
-    emit ChangeToWhitelist(_address, isWhiteList[_address]);
+    isWhitelist[_address] = true;
+    emit ChangeToWhitelist(_address, isWhitelist[_address]);
   }
 
   // removing functions to mapping
   function _removeWhitelistBatch(address [] memory _addresses) internal {
     for (uint i = 0; i < _addresses.length; i++) {
-      isWhiteList[_addresses[i]] = false;
-      emit ChangeToWhitelist(_addresses[i], isWhiteList[_addresses[i]]);
+      isWhitelist[_addresses[i]] = false;
+      emit ChangeToWhitelist(_addresses[i], isWhitelist[_addresses[i]]);
     }
   }
 
   function _removeWhitelist(address _address) internal {
-    isWhiteList[_address] = false;
-    emit ChangeToWhitelist(_address, isWhiteList[_address]);
+    isWhitelist[_address] = false;
+    emit ChangeToWhitelist(_address, isWhitelist[_address]);
   }
 }
