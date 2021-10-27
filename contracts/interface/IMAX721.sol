@@ -28,26 +28,40 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 interface IMAX721 is IERC165 {
   // Must calculate IERC165 interface bytes4
-  // and add later... stay tuned
+  // minterStatus() => 0x2ecd28ab
+  // minterFees() => 0xd95ae162
+  // minterMaximumCapacity() => 0x78c5939b
+  // minterMaximumTeamMints() => 0x049157bb
+  // minterTeamMintsRemaining() => 0x5c17e370
+  // minterTeamMintsCount() => 0xe68b7961
+  // minterCurrentCount() => 0x7943b75e
+  // IMAX721 => 0x481c20a6
 
   // @notice will return status of Minter
+  // minterStatus() => 0x2ecd28ab
   function minterStatus() external view returns (bool);
 
   // @notice will return minting fees
+  // minterFees() => 0xd95ae162
   function minterFees() external view returns (uint256);
 
   // @notice will return maximum mint capacity
+  // minterMaximumCapacity() => 0x78c5939b
   function minterMaximumCapacity() external view returns (uint256);
 
   // @notice will return maximum "team minting" capacity
+  // minterMaximumTeamMints() => 0x049157bb
   function minterMaximumTeamMints() external view returns (uint256);
 
   // @notice will return "team mints" left
+  // minterTeamMintsRemaining() => 0x5c17e370
   function minterTeamMintsRemaining() external view returns (uint256);
 
   // @notice will return "team mints" count
+  // minterTeamMintsCount() => 0xe68b7961
   function minterTeamMintsCount() external view returns (uint256);
 
   // @notice will return current token count
+  // minterCurrentCount() => 0x7943b75e
   function minterCurrentCount() external view returns (uint256);
 }
