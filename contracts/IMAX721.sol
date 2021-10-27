@@ -23,7 +23,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
   ///
-  /// @Dev this is the standard interface for all ERC721's written by myself
+  /// Developer this is the standard interface for all ERC721's written by myself
   ///
 
 interface IMAX721 is IERC165 {
@@ -44,6 +44,9 @@ interface IMAX721 is IERC165 {
 
   // @notice will return "team mints" left
   function minterTeamMintsRemaining() external view returns (uint256);
+
+  // @notice will return "team mints" count
+  function minterTeamMintsCount() external view returns (uint256);
 
   // @notice will return current token count
   function minterCurrentCount() external view returns (uint256);

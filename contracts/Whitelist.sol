@@ -53,3 +53,4 @@ abstract contract Whitelist {
     isWhiteList[_address] = false;
     emit ChangeToWhitelist(_address, isWhiteList[_address]);
   }
+}

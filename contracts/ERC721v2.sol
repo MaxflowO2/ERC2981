@@ -11,13 +11,13 @@
  */
 
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.8.0 <0.9.02;
+pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract ERC is ERC721, Ownable {
+contract ERC721v2 is ERC721, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _tokenIdCounter;

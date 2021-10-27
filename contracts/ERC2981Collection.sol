@@ -31,7 +31,7 @@ abstract contract ERC2981Collection is IERC2981 {
   // Set to be internal function _setRoyalties
   function _setRoyalties(address _receiver, uint256 _percentage) internal {
     royaltyAddress = _receiver;
-    royaltyPercent = _percent;
+    royaltyPercent = _percentage;
   }
 
   // Override for royaltyInfo(uint256, uint256)

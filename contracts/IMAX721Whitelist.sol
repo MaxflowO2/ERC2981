@@ -30,7 +30,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
   ///
-  /// @Dev this is the standard interface for all ERC721's written by myself
+  /// Developer this is the standard interface for all ERC721's written by myself
   ///
 
 interface IMAX721Whitelist is IERC165 {
