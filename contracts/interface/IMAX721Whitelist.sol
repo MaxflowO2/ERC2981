@@ -35,7 +35,7 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 interface IMAX721Whitelist is IERC165 {
 
-  // Must calculate IERC165 interface bytes4
+  // ERC165 data
   // whitelistStatus() => 0x9ddf7ad3
   // whitelistEnd() => 0xbfb6e0e7
   // IMAX721Whitelist => 0x22699a34

@@ -27,7 +27,8 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
   ///
 
 interface IMAX721 is IERC165 {
-  // Must calculate IERC165 interface bytes4
+
+  // ERC165 data
   // minterStatus() => 0x2ecd28ab
   // minterFees() => 0xd95ae162
   // minterMaximumCapacity() => 0x78c5939b

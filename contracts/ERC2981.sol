@@ -18,6 +18,11 @@ import "./interface/IERC2981.sol";
 
 abstract contract ERC2981 is IERC2981 {
 
+  // ERC165
+  // _setRoyalties(uint256,address,uint256) => 0xa70bfbd9
+  // royaltyInfo(uint256,uint256) => 0x2a55205a
+  // ERC2981 => 0x8d5edb83
+
   // Mapping Struct for Royalties
   struct mappedRoyalties {
     address receiver;
@@ -28,11 +33,13 @@ abstract contract ERC2981 is IERC2981 {
   mapping(uint256 => mappedRoyalties) royalty;
 
   // Set to be internal function _setRoyalties
+  // _setRoyalties(uint256,address,uint256) => 0xa70bfbd9
   function _setRoyalties(uint256 _tokenId, address _receiver, uint256 _percentage) internal {
     royalty[_tokenId] = mappedRoyalties(_receiver, _percentage);
   }
 
   // Override for royaltyInfo(uint256, uint256)
+  // royaltyInfo(uint256,uint256) => 0x2a55205a
   function royaltyInfo(
     uint256 _tokenId,
     uint256 _salePrice
