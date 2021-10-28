@@ -27,8 +27,9 @@ import "./access/Developer.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
+import "./modules/PaymentSplitter.sol";
 
-contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage, Developer, Ownable {
+contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage, PaymentSplitter, Developer, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
@@ -51,6 +52,7 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
   bytes4 private constant _INTERFACE_ID_ERC2981Collection = 0x6af56a00;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x481c20a6;
   bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
+  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x20998aed;
 
   constructor() ERC721("ERC", "721") {
 
@@ -60,6 +62,7 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     _registerInterface(_INTERFACE_ID_ERC2981Collection);
     _registerInterface(_INTERFACE_ID_IMAX721);
     _registerInterface(_INTERFACE_ID_Developer);
+    _registerInterface(_INTERFACE_ID_PaymentSplitter);
   }
 
 /***
@@ -90,12 +93,6 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     _tokenIdCounter.increment();
     _teamMintCounter.increment();
   }
-
-  // Function to receive Ether. msg.data must be empty
-  receive() external payable {}
-
-  // Fallback function is called when msg.data is not empty
-  fallback() external payable {}
 
   function getBalance() external view returns (uint) {
     return address(this).balance;
@@ -170,6 +167,11 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     uint256 old = mintSize;
     mintSize = _amount;
     emit UpdatedMintSize(old, mintSize);
+  }
+
+  // @notice will add an address to PaymentSplitter by onlyDev role
+  function addPayee(address addy, uint256 shares) public onlyDev {
+    _addPayee(addy, shares);
   }
 
   // @notice function useful for accidental ETH transfers to contract (to user address)

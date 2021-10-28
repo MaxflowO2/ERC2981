@@ -71,7 +71,7 @@ module.exports = {
     // Binance Test Net
     BNBTest: {
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://data-seed-prebsc-2-s1.binance.org:8545`);
+        return new HDWalletProvider(process.env.MNEMONIC, `https://data-seed-prebsc-1-s1.binance.org:8545/`);
       },
       network_id: 97,
       gas: 10000000,
@@ -83,7 +83,7 @@ module.exports = {
     // Binance Smart Chain
     BNB: {
       provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, `https://bsc-dataseed1.binance.org`);
+        return new HDWalletProvider(process.env.MNEMONIC, `https://bsc-dataseed.binance.org/`);
       },
       network_id: 56,
       gas: 10000000,

@@ -6,7 +6,7 @@
  *    ██████╔╝███████╗ ╚████╔╝ ███████╗███████╗╚██████╔╝██║     ███████╗██║  ██║
  *    ╚═════╝ ╚══════╝  ╚═══╝  ╚══════╝╚══════╝ ╚═════╝ ╚═╝     ╚══════╝╚═╝  ╚═╝
  * This is a re-write of @openzeppelin/contracts/access/Ownable.sol
- * Written by MaxFlowO2, Senior Developer and Partner of G&M² Labs
+ * Rewritten by MaxFlowO2, Senior Developer and Partner of G&M² Labs
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
  */

@@ -12,8 +12,7 @@
  *    ╚════██║██╔═══╝ ██║     ██║   ██║      ██║   ██╔══╝  ██╔══██╗  
  *    ███████║██║     ███████╗██║   ██║      ██║   ███████╗██║  ██║  
  *    ╚══════╝╚═╝     ╚══════╝╚═╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝  
- * Orginal Source: 
- * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/finance/PaymentSplitter.sol
+ * This is a re-write of @openzeppelin/contracts/finance/PaymentSplitter.sol
  * Rewritten by MaxFlowO2, Senior Developer and Partner of G&M² Labs
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
@@ -41,6 +40,17 @@ import "@openzeppelin/contracts/utils/Context.sol";
  */
 
 abstract contract PaymentSplitter is Context {
+
+  // ERC165 data
+  // totalShares() => 0x3a98ef39
+  // totalReleased() => 0xe33b7de3
+  // shares(address) => 0xce7c2ac2
+  // released(address) => 0x9852595c
+  // payee(uint256) => 0x8b83209b
+  // _addPayee(address,uint256) => 0x6ae6921f
+  // claim() => 0x4e71d92d
+  // PaymentSplitter => 0x20998aed
+
   event PayeeAdded(address account, uint256 shares);
   event PaymentReleased(address to, uint256 amount);
   event PaymentReceived(address from, uint256 amount);
@@ -73,6 +83,7 @@ abstract contract PaymentSplitter is Context {
   /**
    * @dev Getter for the total shares held by payees.
    */
+  // totalShares() => 0x3a98ef39
   function totalShares() public view returns (uint256) {
     return _totalShares;
   }
@@ -80,6 +91,7 @@ abstract contract PaymentSplitter is Context {
   /**
    * @dev Getter for the total amount of Ether already released.
    */
+  // totalReleased() => 0xe33b7de3
   function totalReleased() public view returns (uint256) {
     return _totalReleased;
   }
@@ -87,6 +99,7 @@ abstract contract PaymentSplitter is Context {
   /**
    * @dev Getter for the amount of shares held by an account.
    */
+  // shares(address) => 0xce7c2ac2
   function shares(address account) public view returns (uint256) {
     return _shares[account];
   }
@@ -94,6 +107,7 @@ abstract contract PaymentSplitter is Context {
   /**
    * @dev Getter for the amount of Ether already released to a payee.
    */
+  // released(address) => 0x9852595c
   function released(address account) public view returns (uint256) {
     return _released[account];
   }
@@ -101,6 +115,7 @@ abstract contract PaymentSplitter is Context {
   /**
    * @dev Getter for the address of the payee number `index`.
    */
+  // payee(uint256) => 0x8b83209b
   function payee(uint256 index) public view returns (address) {
     return _payees[index];
   }
@@ -110,6 +125,7 @@ abstract contract PaymentSplitter is Context {
    * total shares and their previous withdrawals.
    */
   // This function was updated from "account" to msg.sender
+  // claim() => 0x4e71d92d
   function claim() public virtual {
     require(_shares[msg.sender] > 0, "PaymentSplitter: msg.sender has no shares");
 
@@ -121,7 +137,7 @@ abstract contract PaymentSplitter is Context {
     _released[msg.sender] = _released[msg.sender] + payment;
     _totalReleased = _totalReleased + payment;
 
-    Address.sendValue(msg.sender, payment);
+    Address.sendValue(payable(msg.sender), payment);
     emit PaymentReleased(msg.sender, payment);
   }
 
@@ -131,6 +147,7 @@ abstract contract PaymentSplitter is Context {
    * @param shares_ The number of shares owned by the payee.
    */
   // This function was updated to internal
+  // _addPayee(address,uint256) => 0x6ae6921f
   function _addPayee(address account, uint256 shares_) internal {
     require(account != address(0), "PaymentSplitter: account is the zero address");
     require(shares_ > 0, "PaymentSplitter: shares are 0");
