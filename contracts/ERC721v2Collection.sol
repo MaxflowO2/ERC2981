@@ -94,6 +94,18 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
     _teamMintCounter.increment();
   }
 
+  // Function to receive ether, msg.data must be empty
+  receive() external payable {
+    // From PaymentSplitter.sol
+    emit PaymentReceived(msg.sender, msg.value);
+  }
+
+  // Function to receive ether, msg.data is not empty
+  fallback() external payable {
+    // From PaymentSplitter.sol
+    emit PaymentReceived(msg.sender, msg.value);
+  }
+
   function getBalance() external view returns (uint) {
     return address(this).balance;
   }

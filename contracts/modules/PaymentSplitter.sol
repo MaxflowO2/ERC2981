@@ -69,16 +69,19 @@ abstract contract PaymentSplitter is Context {
    * To learn more about this see the Solidity documentation for
    * https://solidity.readthedocs.io/en/latest/contracts.html#fallback-function[fallback
    * functions].
+   *
+   *  receive() external payable virtual {
+   *    emit PaymentReceived(_msgSender(), msg.value);
+   *  }
+   *
+   *  // Fallback function is called when msg.data is not empty
+   *  // Added to PaymentSplitter.sol
+   *  fallback() external payable {
+   *    emit PaymentReceived(_msgSender(), msg.value);
+   *  }
+   *
+   * receive() and fallback() to be handled at final contract
    */
-  receive() external payable virtual {
-    emit PaymentReceived(_msgSender(), msg.value);
-  }
-
-  // Fallback function is called when msg.data is not empty
-  // Added to PaymentSplitter.sol
-  fallback() external payable {
-    emit PaymentReceived(_msgSender(), msg.value);
-  }
 
   /**
    * @dev Getter for the total shares held by payees.
