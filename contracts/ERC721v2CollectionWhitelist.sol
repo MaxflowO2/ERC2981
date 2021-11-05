@@ -62,7 +62,7 @@ contract ERC721v2CollectionWhitelist is ERC721, ERC2981Collection, IMAX721, IMAX
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
   bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
   bytes4 private constant _INTERFACE_ID_ERC2981Collection = 0x6af56a00;
-  bytes4 private constant _INTERFACE_ID_IMAX721 = 0x481c20a6;
+  bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
   bytes4 private constant _INTERFACE_ID_IMAX721Whitelist = 0x22699a34;
   bytes4 private constant _INTERFACE_ID_Whitelist = 0xaab9e3bd;
   bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
@@ -302,7 +302,7 @@ contract ERC721v2CollectionWhitelist is ERC721, ERC2981Collection, IMAX721, IMAX
   }
 
   // @notice will return current token count
-  function minterCurrentCount() external view override(IMAX721) returns (uint256) {
+  function totalSupply() external view override(IMAX721) returns (uint256) {
     return _tokenIdCounter.current();
   }
 

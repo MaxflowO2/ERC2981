@@ -35,8 +35,8 @@ interface IMAX721 is IERC165 {
   // minterMaximumTeamMints() => 0x049157bb
   // minterTeamMintsRemaining() => 0x5c17e370
   // minterTeamMintsCount() => 0xe68b7961
-  // minterCurrentCount() => 0x7943b75e
-  // IMAX721 => 0x481c20a6
+  // totalSupply() => 0x18160ddd
+  // IMAX721 => 0x29499a25
 
   // @notice will return status of Minter
   // minterStatus() => 0x2ecd28ab
@@ -63,6 +63,6 @@ interface IMAX721 is IERC165 {
   function minterTeamMintsCount() external view returns (uint256);
 
   // @notice will return current token count
-  // minterCurrentCount() => 0x7943b75e
-  function minterCurrentCount() external view returns (uint256);
+  // totalSupply() => 0x18160ddd
+  function totalSupply() external view returns (uint256);
 }

@@ -50,7 +50,7 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
   bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
   bytes4 private constant _INTERFACE_ID_ERC2981Collection = 0x6af56a00;
-  bytes4 private constant _INTERFACE_ID_IMAX721 = 0x481c20a6;
+  bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
   bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
   bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x20998aed;
 
@@ -236,7 +236,7 @@ contract ERC721v2Collection is ERC721, ERC2981Collection, IMAX721, ERC165Storage
   }
 
   // @notice will return current token count
-  function minterCurrentCount() external view override(IMAX721) returns (uint256) {
+  function totalSupply() external view override(IMAX721) returns (uint256) {
     return _tokenIdCounter.current();
   }
 }
