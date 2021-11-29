@@ -1,3 +1,9 @@
+1.1.8 / 2021-08-30
+=================
+  * [Refactor] use `globalThis` if available (#53)
+  * [Deps] update `available-typed-arrays`
+  * [Dev Deps] update `@ljharb/eslint-config`
+
 1.1.7 / 2021-08-07
 =================
   * [Fix] if Symbol.toStringTag exists but is not present, use Object.prototype.toString

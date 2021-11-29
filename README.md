@@ -32,17 +32,18 @@ royaltyInfo(uint, address) - override of IERC2981.sol
 2. NPM - Latest
 3. Truffle - Latest (npm install -g truffle)
 4. hdwallet-provider - Latest (npm install -g @truffle/hdwallet-provider)
-5. truffle-plugin-verify - Latest (npm install -g truffle-plugin-verify)
-6. Infura API-Key
-7. Ftmscan API-Key 
-8. mnemonic for generation of Private Key
-9. .env setup:
+5. OpenZeppelin/contracts (npm install -g @openzeppelin/contracts)
+6. truffle-plugin-verify - Latest (npm install -g truffle-plugin-verify)
+7. Infura API-Key
+8. Ftmscan API-Key 
+9. mnemonic for generation of Private Key
+10. .env setup:
   * MNEMONIC=""
   * INFURA_API_KEY=
   * FTMSCAN_API_KEY=
-10. dotenv - Latest (npm install -g dotenv)
-11. git - Latest (if you plan on developing with us)
-12. create .gitignore
+11. dotenv - Latest (npm install -g dotenv)
+12. git - Latest (if you plan on developing with us)
+13. create .gitignore
   * add .env
 
 ### Currently under testing phase

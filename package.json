@@ -1,25 +1,9 @@
 {
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2",
-    "@truffle/hdwallet-provider": "^1.5.1",
+    "@openzeppelin/contracts": "^4.4.0",
+    "@truffle/hdwallet-provider": "^1.0.37",
     "dotenv": "^10.0.0",
-    "truffle": "^5.4.16",
-    "web3": "^1.5.1"
-  },
-  "name": "max-truffle-env",
-  "description": "Please setup .secret with your mnemonic before running, and add that to .gitignore",
-  "version": "1.0.0",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "truffle-plugin-verify": "^0.5.11"
+    "truffle": "^5.1.33",
+    "truffle-plugin-verify": "^0.5.18"
   }
 }

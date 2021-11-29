@@ -2,7 +2,7 @@
 
 > Returns native AbortController/AbortSignal if available or the abort-controller module if not
 
-A drop-in replacement for the `abort-controller` module that returns the native AbortController if available or the polyfill if not.
+An (almost) drop-in replacement for the `abort-controller` module that returns the native AbortController if available or the polyfill if not.
 
 ### Why?
 
@@ -23,7 +23,7 @@ $ npm install --save native-abort-controller abort-controller
 ## Usage
 
 ```javascript
-import AbortController from 'native-abort-controller'
+import { AbortController } from 'native-abort-controller'
 
 const controller = new AbortController()
 const signal = controller.signal
