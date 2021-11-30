@@ -17,7 +17,7 @@
  * email: cryptobymaxflowO2@gmail.com
  *
  * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 compliance
- * Gas Estimate as-is: 3,136,744
+ * Gas Estimate as-is: 3,133,917
  */
 
 // SPDX-License-Identifier: MIT
