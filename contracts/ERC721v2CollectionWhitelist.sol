@@ -95,16 +95,14 @@ contract ERC721v2CollectionWhitelist is ERC721, ERC2981Collection, IMAX721, IMAX
     if(enableWhiteList) {
       require(isWhitelist[msg.sender]);
       require(msg.value == mintFees * amount, "Wrong amount of Native Token");
-      require(_tokenIdCounter.current() + amount < mintSize, "Can not mint that many");
-      // Send payment line
+      require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
       for (uint i = 0; i < amount; i++) {
         _safeMint(msg.sender, _tokenIdCounter.current());
         _tokenIdCounter.increment();
       }
     } else {
       require(msg.value == mintFees * amount, "Wrong amount of Native Token");
-      require(_tokenIdCounter.current() + amount < mintSize, "Can not mint that many");
-      // Send payment line
+      require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
       for (uint i = 0; i < amount; i++) {
         _safeMint(msg.sender, _tokenIdCounter.current());
         _tokenIdCounter.increment();
