@@ -95,7 +95,7 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
     for (uint i = 0; i < amount; i++) {
-      _safeMint(msg.sender, mintID(_tokenIdCounter.current()));
+      _safeMint(msg.sender, mintID());
       _tokenIdCounter.increment();
     }
   }
@@ -105,13 +105,13 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     require(teamMintSize != 0, "Team minting not enabled");
     require(_tokenIdCounter.current() < mintSize, "Can not mint that many");
     require(_teamMintCounter.current() < teamMintSize, "Can not team mint anymore");
-    _safeMint(_address, mintID(_tokenIdCounter.current()));
+    _safeMint(_address, mintID());
     _tokenIdCounter.increment();
     _teamMintCounter.increment();
   }
 
   // @notice this shifts the _tokenIdCounter to proper mint number
-  function mintID(uint256 number) internal returns (uint256) {
+  function mintID() internal view returns (uint256) {
     return (mintStartID + _tokenIdCounter.current()) % mintSize;
   }
 
