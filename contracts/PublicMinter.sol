@@ -16,7 +16,7 @@
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
  *
- * Gas estimate: 2,414,971
+ * Gas estimate: 2,534,770
  */
 
 // SPDX-License-Identifier: MIT
@@ -79,7 +79,7 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Payme
   }
 
   // allows the creator of the token to adjust royalties
-  function adjustRoyalties(uint256 _tokenID, address memory _address, uint256 _permille) public {
+  function adjustRoyalties(uint256 _tokenID, address _address, uint256 _permille) public {
     require(msg.sender == creators[_tokenID], "You are not the creator of this NFT");
     _setRoyalties(_tokenID, _address, _permille);
   }
@@ -197,3 +197,4 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Payme
     return super.tokenURI(tokenId);
   }
 }
+
