@@ -23,23 +23,23 @@ abstract contract BAYC is IBAYC {
   // ERC165
   // _setRevealTimestamp(uint256) => 0x20add1a4
   // _setStartNumber(uint256) => 0x4266377e
-  // _setMD5JSON(string) => 0x86d5c695
-  // _setMD5Images(string) => 0x861f7c45
+  // _setProvenanceJSON(string) => 0xf3808eb1
+  // _setProvenanceImages(string) => 0x1ef799c6
   // RevealTimestamp() => 0x83ba7c1d
-  // RevealMD5Images() => 0xec0fad08
-  // RevealMD5JSON() => 0x5798abef
+  // RevealProvenanceImages() => 0xd792d2a0
+  // RevealProvenanceJSON() => 0x94352676
   // RevealStartNumber() => 0x1efb051a
-  // BAYC => 0x44d723ea
+  // BAYC => 0x515a7c7c
 
-  event SetMD5Images(string _old, string _new);
-  event SetMD5JSON(string _old, string _new);
+  event SetProvenanceImages(string _old, string _new);
+  event SetProvenanceJSON(string _old, string _new);
   event SetTimestamp(uint _old, uint _new);
   event SetStartNumber(uint _old, uint _new);
 
   uint256 private timestamp;
   uint256 private startNumber;
-  string private MD5Images;
-  string private MD5JSON;
+  string private ProvenanceImages;
+  string private ProvenanceJSON;
 
   // @notice will set reveal timestamp
   // _setRevealTimestamp(uint256) => 0x20add1a4
@@ -57,20 +57,20 @@ abstract contract BAYC is IBAYC {
     emit SetStartNumber(old, startNumber);
   }
 
-  // @notice will set JSON MD5
-  // _setMD5JSON(string) => 0x86d5c695
-  function _setMD5JSON(string memory _MD5JSON) internal {
-    string memory old = MD5JSON;
-    MD5JSON = _MD5JSON;
-    emit SetMD5JSON(old, MD5JSON);
+  // @notice will set JSON Provenance
+  // _setProvenanceJSON(string) => 0xf3808eb1
+  function _setProvenanceJSON(string memory _ProvenanceJSON) internal {
+    string memory old = ProvenanceJSON;
+    ProvenanceJSON = _ProvenanceJSON;
+    emit SetProvenanceJSON(old, ProvenanceJSON);
   }
 
-  // @notice will set Images MD5
-  // _setMD5Images(string) => 0x861f7c45
-  function _setMD5Images(string memory _MD5Images) internal {
-    string memory old = MD5Images;
-    MD5Images = _MD5Images;
-    emit SetMD5Images(old, MD5Images);
+  // @notice will set Images Provenance
+  // _setProvenanceImages(string) => 0x1ef799c6
+  function _setProvenanceImages(string memory _ProvenanceImages) internal {
+    string memory old = ProvenanceImages;
+    ProvenanceImages = _ProvenanceImages;
+    emit SetProvenanceImages(old, ProvenanceImages);
   }
 
   // @notice will return timestamp of reveal
@@ -79,16 +79,16 @@ abstract contract BAYC is IBAYC {
     return timestamp;
   }
 
-  // @notice will return MD5 hash of images on IPFS
-  // RevealMD5Images() => 0xec0fad08
-  function RevealMD5Images() external view override(IBAYC) returns (string memory) {
-    return MD5Images;
+  // @notice will return Provenance hash of images
+  // RevealProvenanceImages() => 0xd792d2a0
+  function RevealProvenanceImages() external view override(IBAYC) returns (string memory) {
+    return ProvenanceImages;
   }
 
-  // @notice will return MD5 hash of images on IPFS
-  // RevealMD5JSON() => 0x5798abef
-  function RevealMD5JSON() external view override(IBAYC) returns (string memory) {
-    return MD5JSON;
+  // @notice will return Provenance hash of metadata
+  // RevealProvenanceJSON() => 0x94352676
+  function RevealProvenanceJSON() external view override(IBAYC) returns (string memory) {
+    return ProvenanceJSON;
   }
 
   // @notice will return starting number for mint
@@ -96,5 +96,5 @@ abstract contract BAYC is IBAYC {
   function RevealStartNumber() external view override(IBAYC) returns (uint256) {
     return startNumber;
   }
-
 }
+

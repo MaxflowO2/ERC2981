@@ -22,25 +22,26 @@ interface IBAYC is IERC165{
 
   // ERC165
   // RevealTimestamp() => 0x83ba7c1d
-  // RevealMD5Images() => 0xec0fad08
-  // RevealMD5JSON() => 0x5798abef
+  // RevealProvenanceImages() => 0xd792d2a0
+  // RevealProvenanceJSON() => 0x94352676
   // RevealStartNumber() => 0x1efb051a
-  // IBAYC => 0x26d67fe0
+  // IBAYC => 0x515a7c7c
 
   // @notice will return timestamp of reveal
   // RevealTimestamp() => 0x83ba7c1d
   function RevealTimestamp() external view returns (uint256);
 
-  // @notice will return MD5 hash of images on IPFS
-  // RevealMD5Images() => 0xec0fad08
-  function RevealMD5Images() external view returns (string memory);
+  // @notice will return Provenance hash of images
+  // RevealProvenanceImages() => 0xd792d2a0
+  function RevealProvenanceImages() external view returns (string memory);
 
-  // @notice will return MD5 hash of images on IPFS
-  // RevealMD5JSON() => 0x5798abef
-  function RevealMD5JSON() external view returns (string memory);
+  // @notice will return Provenance hash of metadata
+  // RevealProvenanceJSON() => 0x94352676
+  function RevealProvenanceJSON() external view returns (string memory);
 
   // @notice will return starting number for mint
   // RevealStartNumber() => 0x1efb051a
   function RevealStartNumber() external view returns (uint256);
 }
+
 

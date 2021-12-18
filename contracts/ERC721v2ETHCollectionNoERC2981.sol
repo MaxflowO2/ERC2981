@@ -53,8 +53,8 @@ contract ERC721v2ETHCollectionNoERC2981 is ERC721, BAYC, ContractURI, IMAX721, E
 
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-  bytes4 private constant _INTERFACE_ID_IBAYC = 0x26d67fe0;
-  bytes4 private constant _INTERFACE_ID_BAYC = 0x44d723ea;
+  bytes4 private constant _INTERFACE_ID_IBAYC = 0xdee68dd1;
+  bytes4 private constant _INTERFACE_ID_BAYC = 0x515a7c7c;
   bytes4 private constant _INTERFACE_ID_IContractURI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_ContractURI = 0x21886d4b;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
