@@ -20,26 +20,25 @@ import "../interface/IContractURI.sol";
 abstract contract ContractURI is IContractURI {
 
   // ERC165 stuff to be added
-  // _setContractURI(string) => 0xc92bb9ce
+  // all internals are not calculated
   // contractURI() => 0xe8a3d485
-  // ContractURI => 0x21886d4b
+  // ContractURI => 0xe8a3d485
 
   event ContractURIChange(string _old, string _new);
 
-  string private _ContractURI;
+  string private thisContractURI;
 
   // @notice this sets the contractURI
-  // _setContractURI(string) => 0xc92bb9ce
   function _setContractURI(string memory newURI) internal {
-    string memory old = _ContractURI;
-    _ContractURI = newURI;
-    emit ContractURIChange(old, _ContractURI);
+    string memory old = thisContractURI;
+    thisContractURI = newURI;
+    emit ContractURIChange(old, thisContractURI);
   }
 
   // @notice will return string _ContractURI
   // contractURI() => 0xe8a3d485
   function contractURI() external view override(IContractURI) returns (string memory) {
-    return _ContractURI;
+    return thisContractURI;
   }
 
 }

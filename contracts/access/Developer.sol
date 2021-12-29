@@ -37,8 +37,7 @@ abstract contract Developer is Context {
     // developer() => 0xca4b208b
     // renounceDeveloper() => 0xad6d9c17
     // transferDeveloper(address) => 0xb671f4ea
-    // _transferDeveloper(address) => 0x82dd18b8
-    // Developer => 0x538a50ce
+    // Developer => 0x18f19aba
 
     address private _developer;
 
@@ -83,7 +82,7 @@ abstract contract Developer is Context {
      * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
      * Can only be called by the current developer.
      */
-    // transferDeveloper(address) => 0xb671f4ea
+    // transferDeveloper(address) => 0x64cb4edb
     function transferDeveloper(address newDeveloper) public virtual onlyDev {
         require(newDeveloper != address(0), "Developer: new developer is the zero address");
         _transferDeveloper(newDeveloper);
@@ -93,7 +92,6 @@ abstract contract Developer is Context {
      * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
      * Internal function without access restriction.
      */
-    // _transferDeveloper(address) => 0x82dd18b8
     function _transferDeveloper(address newDeveloper) internal virtual {
         address oldDeveloper = _developer;
         _developer = newDeveloper;

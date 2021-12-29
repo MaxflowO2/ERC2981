@@ -16,45 +16,40 @@ pragma solidity >=0.8.0 <0.9.0;
 abstract contract Whitelist {
 
   // ERC165 data
-  // _addWhitelistBatch(address[]) => 0xfcc348ba
-  // _addWhitelist(address) => 0xcc64ecf2
-  // _removeWhitelistBatch(address[]) => 0xec7a834d
-  // _removeWhitelistBatch(address[]) => 0xec7a834d
-  // Whitelist => 0xaab9e3bd
+  // Public getter isWhitelist(address) => 0xc683630d
+  // Whitelist is 0xc683630d
 
   // set contract mapping
   mapping(address => bool) public isWhitelist;
 
   // only event needed
-  event ChangeToWhitelist(address _address, bool update);
+  event ChangeToWhitelist(address _address, bool old, bool update);
 
   // adding functions to mapping
-  // _addWhitelistBatch(address[]) => 0xfcc348ba
   function _addWhitelistBatch(address [] memory _addresses) internal {
     for (uint i = 0; i < _addresses.length; i++) {
-      isWhitelist[_addresses[i]] = true;
-      emit ChangeToWhitelist(_addresses[i], isWhitelist[_addresses[i]]);
+      _addWhitelist(_addresses[i]);
     }
   }
 
-  // _addWhitelist(address) => 0xcc64ecf2
   function _addWhitelist(address _address) internal {
+    require(!isWhitelist[_address], "Already on Whitelist");
+    bool old = isWhitelist[_address];
     isWhitelist[_address] = true;
-    emit ChangeToWhitelist(_address, isWhitelist[_address]);
+    emit ChangeToWhitelist(_address, old, isWhitelist[_address]);
   }
 
   // removing functions to mapping
-  // _removeWhitelistBatch(address[]) => 0xec7a834d
   function _removeWhitelistBatch(address [] memory _addresses) internal {
     for (uint i = 0; i < _addresses.length; i++) {
-      isWhitelist[_addresses[i]] = false;
-      emit ChangeToWhitelist(_addresses[i], isWhitelist[_addresses[i]]);
+      _removeWhitelist(_addresses[i]);
     }
   }
 
-  // _removeWhitelist(address) => 0x7664c4b8
   function _removeWhitelist(address _address) internal {
+    require(isWhitelist[_address], "Already off Whitelist");
+    bool old = isWhitelist[_address];
     isWhitelist[_address] = false;
-    emit ChangeToWhitelist(_address, isWhitelist[_address]);
+    emit ChangeToWhitelist(_address, old, isWhitelist[_address]);
   }
 }

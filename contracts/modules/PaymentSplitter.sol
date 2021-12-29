@@ -47,9 +47,8 @@ abstract contract PaymentSplitter is Context {
   // shares(address) => 0xce7c2ac2
   // released(address) => 0x9852595c
   // payee(uint256) => 0x8b83209b
-  // _addPayee(address,uint256) => 0x6ae6921f
   // claim() => 0x4e71d92d
-  // PaymentSplitter => 0x20998aed
+  // PaymentSplitter => 0x4a7f18f2
 
   event PayeeAdded(address account, uint256 shares);
   event PaymentReleased(address to, uint256 amount);
@@ -150,7 +149,6 @@ abstract contract PaymentSplitter is Context {
    * @param shares_ The number of shares owned by the payee.
    */
   // This function was updated to internal
-  // _addPayee(address,uint256) => 0x6ae6921f
   function _addPayee(address account, uint256 shares_) internal {
     require(account != address(0), "PaymentSplitter: account is the zero address");
     require(shares_ > 0, "PaymentSplitter: shares are 0");

@@ -21,15 +21,11 @@ import "../interface/IBAYC.sol";
 abstract contract BAYC is IBAYC {
 
   // ERC165
-  // _setRevealTimestamp(uint256) => 0x20add1a4
-  // _setStartNumber(uint256) => 0x4266377e
-  // _setProvenanceJSON(string) => 0xf3808eb1
-  // _setProvenanceImages(string) => 0x1ef799c6
   // RevealTimestamp() => 0x83ba7c1d
   // RevealProvenanceImages() => 0xd792d2a0
   // RevealProvenanceJSON() => 0x94352676
   // RevealStartNumber() => 0x1efb051a
-  // BAYC => 0x515a7c7c
+  // BAYC => 0xdee68dd1
 
   event SetProvenanceImages(string _old, string _new);
   event SetProvenanceJSON(string _old, string _new);
@@ -97,4 +93,3 @@ abstract contract BAYC is IBAYC {
     return startNumber;
   }
 }
-
