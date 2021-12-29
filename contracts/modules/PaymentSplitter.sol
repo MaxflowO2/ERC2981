@@ -23,7 +23,6 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-// Removal of SafeMath due to ^0.8.0 standards, not needed
 
 /**
  * @title PaymentSplitter
@@ -161,4 +160,3 @@ abstract contract PaymentSplitter is Context {
     emit PayeeAdded(account, shares_);
   }
 }
-

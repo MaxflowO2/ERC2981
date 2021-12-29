@@ -55,8 +55,10 @@ contract ERC721v2d1ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Co
   bool private lockedPayees;
 
   event UpdatedBaseURI(string _old, string _new);
+  event UpdatedMintFees(uint256 _old, uint256 _new);
   event UpdatedMintSize(uint _old, uint _new);
   event UpdatedMintStatus(bool _old, bool _new);
+  event UpdatedRoyalties(address newRoyaltyAddress, uint256 newPercentage);
   event UpdatedTeamMintSize(uint _old, uint _new);
   event UpdatedWhitelistStatus(bool _old, bool _new);
   event UpdatedPresaleEnd(uint _old, uint _new);
@@ -98,7 +100,7 @@ contract ERC721v2d1ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Co
  */
 
   function publicMint(uint256 amount) public payable nonReentrant() {
-    require(lockedProvidence, "Set Providence hashes");
+    require(lockedProvenance, "Set Providence hashes");
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
@@ -118,7 +120,7 @@ contract ERC721v2d1ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Co
   }
 
   function teamMint(address _address) public onlyOwner {
-    require(lockedProvidence, "Set Providence hashes");
+    require(lockedProvenance, "Set Providence hashes");
     require(teamMintSize != 0, "Team minting not enabled");
     require(_tokenIdCounter.current() < mintSize, "Can not mint that many");
     require(_teamMintCounter.current() < teamMintSize, "Can not team mint anymore");
@@ -276,7 +278,7 @@ contract ERC721v2d1ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Co
     _setProvenanceJSON(_json);
     // Now to psuedo-random the starting number
     // Your API should be a random before this step!
-    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % MINT_SIZE;
+    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % mintSize;
     _setStartNumber(mintStartID);
     // @notice Locks sequence
     lockedProvenance = true;

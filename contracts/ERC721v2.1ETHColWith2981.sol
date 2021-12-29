@@ -47,14 +47,17 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   uint256 private teamMintSize;
   string private base;
   bool private enableMinter;
-  bool private lockedProvidence;
+  bool private lockedProvenance;
+  bool private lockedPayees;
 
   event UpdatedBaseURI(string _old, string _new);
   event UpdatedMintFees(uint256 _old, uint256 _new);
-  event UpdatedMintSize(uint256 _old, uint256 _new);
+  event UpdatedMintSize(uint _old, uint _new);
   event UpdatedMintStatus(bool _old, bool _new);
   event UpdatedRoyalties(address newRoyaltyAddress, uint256 newPercentage);
-  event UpdatedTeamMintSize(uint256 _old, uint256 _new);
+  event UpdatedTeamMintSize(uint _old, uint _new);
+  event ProvenanceLocked(bool _status);
+  event PayeesLocked(bool _status);
 
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -87,7 +90,7 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
  */
 
   function publicMint(uint256 amount) public payable nonReentrant(){
-    require(lockedProvidence, "Set Providence hashes");
+    require(lockedProvenance, "Set Provenance hashes");
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
@@ -98,7 +101,7 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   }
 
   function teamMint(address _address) public onlyOwner {
-    require(lockedProvidence, "Set Providence hashes");
+    require(lockedProvenance, "Set Provenance hashes");
     require(teamMintSize != 0, "Team minting not enabled");
     require(_tokenIdCounter.current() < mintSize, "Can not mint that many");
     require(_teamMintCounter.current() < teamMintSize, "Can not team mint anymore");
@@ -208,17 +211,17 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   // This will also set the starting order as well!
   // Only one shot to do this, otherwise it shows as invalid
   function setProvidence(string memory _images, string memory _json) public onlyDev {
-    require(mintSize != 0 && !lockedProvidence, "Prerequisites not met");
+    require(mintSize != 0 && !lockedProvenance, "Prerequisites not met");
     // This is the initial setting
-    _setMD5Images(_images);
-    _setMD5JSON(_json);
+    _setProvenanceImages(_images);
+    _setProvenanceJSON(_json);
     // Now to psuedo-random the starting number
     // Chainlink VRF not really needed for this at all
     // Your API should be a random before this step!
     mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % mintSize;
     _setStartNumber(mintStartID);
     // @notice Locks sequence
-    lockedProvidence = true;
+    lockedProvenance = true;
   }
 
   // @notice this will set the reveal timestamp

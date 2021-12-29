@@ -29,9 +29,10 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-  ///
-  /// Developer this is the standard interface for all ERC721's written by myself
-  ///
+///
+/// @dev this is the standard interface for @MaxflowO2's 
+///  whitelist contracts
+///
 
 interface IMAX721Whitelist is IERC165 {
 
@@ -41,8 +42,13 @@ interface IMAX721Whitelist is IERC165 {
   // IMAX721Whitelist => 0x22699a34
 
   // @notice will return status of whitelist
+  // @return - bool if whitelist is enabled or not
+  // ERC165 datum whitelistStatus() => 0x9ddf7ad3
   function whitelistStatus() external view returns (bool);
 
   // @notice will return whitelist end (quantity or time)
-  function whitelistEnd() external view returns (uint256);
+  // @return - uint of either number of whitelist mints or
+  //  a timestamp
+  // ERC165 datum IMAX721Whitelist => 0x22699a34
+  function whitelistEnd() external view returns (uint);
 }
