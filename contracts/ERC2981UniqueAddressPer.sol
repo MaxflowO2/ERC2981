@@ -26,15 +26,13 @@ import "./interface/IERC2981.sol";
 abstract contract ERC2981UniqueAddressPer is IERC2981 {
 
   // ERC165
-  // _setRoyalties(address,uint256) => 0xa70bfbd9
   // royaltyInfo(uint256,uint256) => 0x2a55205a
-  // ERC2981UniqueAddressPer => 0x8d5edb83
+  // ERC2981UniqueAddressPer => 0x2a55205a
 
   mapping(uint256 => address) private royaltyAddress;
   uint256 private royaltyPercent;
 
   // Set to be internal function _setRoyalties
-  // _setRoyalties(uint256,address,uint256) => 0xa70bfbd9
   function _setRoyalties(uint256 _tokenId, address _receiver, uint256 _percentage) internal {
     royaltyAddress[_tokenId] = _receiver;
     royaltyPercent = _percentage;

@@ -61,27 +61,21 @@ contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Cont
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
   bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
-  bytes4 private constant _INTERFACE_ID_ERC2981Collection = 0x6af56a00;
   bytes4 private constant _INTERFACE_ID_IBAYC = 0xdee68dd1;
-  bytes4 private constant _INTERFACE_ID_BAYC = 0x515a7c7c;
   bytes4 private constant _INTERFACE_ID_IContractURI = 0xe8a3d485;
-  bytes4 private constant _INTERFACE_ID_ContractURI = 0x21886d4b;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
   bytes4 private constant _INTERFACE_ID_IMAX721Whitelist = 0x22699a34;
-  bytes4 private constant _INTERFACE_ID_Whitelist = 0xaab9e3bd;
-  bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
-  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x20998aed;
+  bytes4 private constant _INTERFACE_ID_Whitelist = 0xc683630d;
+  bytes4 private constant _INTERFACE_ID_Developer = 0x18f19aba;
+  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
 
   constructor() ERC721("ERC", "721") {
 
     // ECR165 Interfaces Supported
     _registerInterface(_INTERFACE_ID_ERC721);
     _registerInterface(_INTERFACE_ID_IERC2981);
-    _registerInterface(_INTERFACE_ID_ERC2981Collection);
     _registerInterface(_INTERFACE_ID_IBAYC);
-    _registerInterface(_INTERFACE_ID_BAYC);
     _registerInterface(_INTERFACE_ID_IContractURI);
-    _registerInterface(_INTERFACE_ID_ContractURI);
     _registerInterface(_INTERFACE_ID_IMAX721);
     _registerInterface(_INTERFACE_ID_IMAX721Whitelist);
     _registerInterface(_INTERFACE_ID_Whitelist);
