@@ -16,25 +16,30 @@
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
  *
- * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 compliance
- * Gas Estimate as-is: 3,133,917
+ * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 compliance with whitelist
+ * Gas Estimate as-is: 3,571,984
+ *
+ * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./access/Developer.sol";
+import "./access/DeveloperV2.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
+import "./modules/Whitelist.sol";
+import "./interface/IMAX721Whitelist.sol";
 import "./modules/PaymentSplitter.sol";
 import "./modules/BAYC.sol";
 import "./modules/ContractURI.sol";
 
-contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, ERC165Storage, PaymentSplitter, Developer, Ownable {
+contract ERC721v2d1ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, IMAX721Whitelist, ReentrancyGuard, Whitelist, PaymentSplitter, ERC165Storage, DeveloperV2, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
@@ -42,16 +47,21 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
   uint256 private mintFees;
   uint256 private mintSize;
   uint256 private teamMintSize;
+  uint256 private whitelistEndNumber;
   string private base;
   bool private enableMinter;
-  bool private lockedProvidence;
+  bool private enableWhiteList;
+  bool private lockedProvenance;
+  bool private lockedPayees;
 
   event UpdatedBaseURI(string _old, string _new);
-  event UpdatedMintFees(uint256 _old, uint256 _new);
-  event UpdatedMintSize(uint256 _old, uint256 _new);
+  event UpdatedMintSize(uint _old, uint _new);
   event UpdatedMintStatus(bool _old, bool _new);
-  event UpdatedRoyalties(address newRoyaltyAddress, uint256 newPercentage);
-  event UpdatedTeamMintSize(uint256 _old, uint256 _new);
+  event UpdatedTeamMintSize(uint _old, uint _new);
+  event UpdatedWhitelistStatus(bool _old, bool _new);
+  event UpdatedPresaleEnd(uint _old, uint _new);
+  event ProvenanceLocked(bool _status);
+  event PayeesLocked(bool _status);
 
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
@@ -59,7 +69,9 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
   bytes4 private constant _INTERFACE_ID_IBAYC = 0xdee68dd1;
   bytes4 private constant _INTERFACE_ID_IContractURI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
-  bytes4 private constant _INTERFACE_ID_Developer = 0x18f19aba;
+  bytes4 private constant _INTERFACE_ID_IMAX721Whitelist = 0x22699a34;
+  bytes4 private constant _INTERFACE_ID_Whitelist = 0xc683630d;
+  bytes4 private constant _INTERFACE_ID_DeveloperV2 = 0xcb49d479;
   bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
 
   constructor() ERC721("ERC", "721") {
@@ -70,7 +82,9 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     _registerInterface(_INTERFACE_ID_IBAYC);
     _registerInterface(_INTERFACE_ID_IContractURI);
     _registerInterface(_INTERFACE_ID_IMAX721);
-    _registerInterface(_INTERFACE_ID_Developer);
+    _registerInterface(_INTERFACE_ID_IMAX721Whitelist);
+    _registerInterface(_INTERFACE_ID_Whitelist);
+    _registerInterface(_INTERFACE_ID_DeveloperV2);
     _registerInterface(_INTERFACE_ID_PaymentSplitter);
   }
 
@@ -83,14 +97,23 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
  *    ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   
  */
 
-  function publicMint(uint256 amount) public payable {
+  function publicMint(uint256 amount) public payable nonReentrant() {
     require(lockedProvidence, "Set Providence hashes");
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
-    for (uint i = 0; i < amount; i++) {
-      _safeMint(msg.sender, mintID());
-      _tokenIdCounter.increment();
+    if(enableWhiteList) {
+      require(isWhitelist[msg.sender], "You are not Whitelisted");
+      // remove from whitelist and emit
+      for (uint i = 0; i < amount; i++) {
+        _safeMint(msg.sender, mintID());
+        _tokenIdCounter.increment();
+      }
+    } else {
+      for (uint i = 0; i < amount; i++) {
+        _safeMint(msg.sender, mintID());
+        _tokenIdCounter.increment();
+      }
     }
   }
 
@@ -164,6 +187,40 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     emit UpdatedMintStatus(old, enableMinter);
   }
 
+  // @notice this will enable whitelist or "if" in publicMint()
+  function enableWhitelist() public onlyOwner {
+    bool old = enableWhiteList;
+    enableWhiteList = true;
+    emit UpdatedWhitelistStatus(old, enableWhiteList);
+  }
+
+  // @notice this will disable whitelist or "else" in publicMint()
+  function disableWhitelist() public onlyOwner {
+    bool old = enableWhiteList;
+    enableWhiteList = false;
+    emit UpdatedWhitelistStatus(old, enableWhiteList);
+  }
+
+  // @notice adding functions to mapping
+  function addWhitelistBatch(address [] memory _addresses) public onlyOwner {
+    _addWhitelistBatch(_addresses);
+  }
+
+  // @notice adding functions to mapping
+  function addWhitelist(address _address) public onlyOwner {
+    _addWhitelist(_address);
+  }
+
+  // @notice removing functions to mapping
+  function removeWhitelistBatch(address [] memory _addresses) public onlyOwner {
+    _removeWhitelistBatch(_addresses);
+  }
+
+  // @notice removing functions to mapping
+  function removeWhitelist(address _address) public onlyOwner {
+    _removeWhitelist(_address);
+  }
+
 /***
  *    ██████╗ ███████╗██╗   ██╗
  *    ██╔══██╗██╔════╝██║   ██║
@@ -175,11 +232,17 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
  * also contains all overrides required for funtionality
  */
 
-  // @notice will update _baseURI() by onlyDev role
-  function setBaseURI(string memory _base) public onlyDev {
-    string memory old = base;
-    base = _base;
-    emit UpdatedBaseURI(old, base);
+  // @notice will add an address to PaymentSplitter by onlyDev role
+  function addPayee(address newAddy, uint newShares) public onlyDev {
+    require(!lockedPayees, "Can not set, payees locked");
+    _addPayee(newAddy, newShares);
+  }
+
+  // @notice will lock payees on PaymentSplitter.sol
+  function lockPayees() public onlyDev {
+    require(!lockedPayees, "Can not set, payees locked");
+    lockedPayees = true;
+    emit PayeesLocked(lockedPayees);
   }
 
   // @notice will set the ContractURI for OpenSea
@@ -201,32 +264,29 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     emit UpdatedMintSize(old, mintSize);
   }
 
-  // @notice this will set the Providence Hashes
+
+  // @notice this will set the Provenance Hashes
   // This will also set the starting order as well!
   // Only one shot to do this, otherwise it shows as invalid
-  function setProvidence(string memory _images, string memory _json) public onlyDev {
-    require(mintSize != 0 && !lockedProvidence, "Prerequisites not met");
+  function setProvenance(string memory _images, string memory _json) public onlyDev {
+    require(lockedPayees, "Can not set, payees unlocked");
+    require(!lockedProvenance, "Already Set!");
     // This is the initial setting
-    _setMD5Images(_images);
-    _setMD5JSON(_json);
+    _setProvenanceImages(_images);
+    _setProvenanceJSON(_json);
     // Now to psuedo-random the starting number
-    // Chainlink VRF not really needed for this at all
     // Your API should be a random before this step!
-    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % mintSize;
+    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % MINT_SIZE;
     _setStartNumber(mintStartID);
     // @notice Locks sequence
-    lockedProvidence = true;
+    lockedProvenance = true;
+    emit ProvenanceLocked(lockedProvenance);
   }
 
   // @notice this will set the reveal timestamp
   // This is more for your API and not on chain...
   function setRevealTimestamp(uint256 _time) public onlyDev {
     _setRevealTimestamp(_time);
-  }
-
-  // @notice will add an address to PaymentSplitter by onlyDev role
-  function addPayee(address addy, uint256 shares) public onlyDev {
-    _addPayee(addy, shares);
   }
 
   // @notice function useful for accidental ETH transfers to contract (to user address)
@@ -281,5 +341,15 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
   // @notice will return current token count
   function totalSupply() external view override(IMAX721) returns (uint256) {
     return _tokenIdCounter.current();
+  }
+
+  // @notice will return whitelist end number
+  function whitelistEnd() external view override(IMAX721Whitelist) returns (uint256) {
+    return whitelistEndNumber;
+  }
+
+  // @notice will return whitelist status of Minter
+  function whitelistStatus() external view override(IMAX721Whitelist) returns (bool) {
+    return enableWhiteList;
   }
 }

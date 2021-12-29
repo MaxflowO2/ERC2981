@@ -18,15 +18,18 @@
  *
  * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 compliance
  * Gas Estimate as-is: 3,133,917
+ *
+ * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./access/Developer.sol";
+import "./access/DeveloperV2.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
@@ -34,7 +37,7 @@ import "./modules/PaymentSplitter.sol";
 import "./modules/BAYC.sol";
 import "./modules/ContractURI.sol";
 
-contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, ERC165Storage, PaymentSplitter, Developer, Ownable {
+contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, ERC165Storage, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
@@ -59,7 +62,7 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
   bytes4 private constant _INTERFACE_ID_IBAYC = 0xdee68dd1;
   bytes4 private constant _INTERFACE_ID_IContractURI = 0xe8a3d485;
   bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
-  bytes4 private constant _INTERFACE_ID_Developer = 0x18f19aba;
+  bytes4 private constant _INTERFACE_ID_DeveloperV2 = 0xcb49d479;
   bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
 
   constructor() ERC721("ERC", "721") {
@@ -70,7 +73,7 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
     _registerInterface(_INTERFACE_ID_IBAYC);
     _registerInterface(_INTERFACE_ID_IContractURI);
     _registerInterface(_INTERFACE_ID_IMAX721);
-    _registerInterface(_INTERFACE_ID_Developer);
+    _registerInterface(_INTERFACE_ID_DeveloperV2);
     _registerInterface(_INTERFACE_ID_PaymentSplitter);
   }
 
@@ -83,7 +86,7 @@ contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, 
  *    ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   
  */
 
-  function publicMint(uint256 amount) public payable {
+  function publicMint(uint256 amount) public payable nonReentrant(){
     require(lockedProvidence, "Set Providence hashes");
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
