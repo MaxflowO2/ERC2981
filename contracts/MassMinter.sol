@@ -45,16 +45,14 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Payme
   // bytes4 constants for ERC165
   bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
   bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
-  bytes4 private constant _INTERFACE_ID_ERC2981 = 0x8d5edb83;
-  bytes4 private constant _INTERFACE_ID_Developer = 0x538a50ce;
-  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x20998aed;
+  bytes4 private constant _INTERFACE_ID_Developer = 0x18f19aba;
+  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
 
   constructor() ERC721("ERC", "721") {
 
     // ECR165 Interfaces Supported
     _registerInterface(_INTERFACE_ID_ERC721);
     _registerInterface(_INTERFACE_ID_IERC2981);
-    _registerInterface(_INTERFACE_ID_ERC2981);
     _registerInterface(_INTERFACE_ID_Developer);
     _registerInterface(_INTERFACE_ID_PaymentSplitter);
   }
@@ -197,4 +195,5 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Payme
     return super.tokenURI(tokenId);
   }
 }
+
 
