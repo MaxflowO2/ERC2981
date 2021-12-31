@@ -16,16 +16,16 @@
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
  *
- * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 compliance
- * Gas Estimate as-is: 3,133,917
+ * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981
+ * Gas Estimate as-is: 3,571,984
  *
  * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
+ * Rewritten to v2.1.1 standards, removal of ERC165Storage, msg.sender => _msgSender()
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -37,7 +37,7 @@ import "./modules/PaymentSplitter.sol";
 import "./modules/BAYC.sol";
 import "./modules/ContractURI.sol";
 
-contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, ERC165Storage, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
+contract ERC721v2ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
@@ -59,26 +59,7 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   event ProvenanceLocked(bool _status);
   event PayeesLocked(bool _status);
 
-  // bytes4 constants for ERC165
-  bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-  bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
-  bytes4 private constant _INTERFACE_ID_IBAYC = 0xdee68dd1;
-  bytes4 private constant _INTERFACE_ID_IContractURI = 0xe8a3d485;
-  bytes4 private constant _INTERFACE_ID_IMAX721 = 0x29499a25;
-  bytes4 private constant _INTERFACE_ID_DeveloperV2 = 0xcb49d479;
-  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
-
-  constructor() ERC721("ERC", "721") {
-
-    // ECR165 Interfaces Supported
-    _registerInterface(_INTERFACE_ID_ERC721);
-    _registerInterface(_INTERFACE_ID_IERC2981);
-    _registerInterface(_INTERFACE_ID_IBAYC);
-    _registerInterface(_INTERFACE_ID_IContractURI);
-    _registerInterface(_INTERFACE_ID_IMAX721);
-    _registerInterface(_INTERFACE_ID_DeveloperV2);
-    _registerInterface(_INTERFACE_ID_PaymentSplitter);
-  }
+  constructor() ERC721("ERC", "721") {}
 
 /***
  *    ███╗   ███╗██╗███╗   ██╗████████╗
@@ -89,19 +70,27 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
  *    ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   
  */
 
-  function publicMint(uint256 amount) public payable nonReentrant(){
-    require(lockedProvenance, "Set Provenance hashes");
+  // @notice this is the mint function, mint Fees in ERC20,
+  //  that locks tokens to contract, inable to withdrawl, public
+  //  nonReentrant() function. More comments within code.
+  // @param uint amount - number of tokens minted
+  function publicMint(uint256 amount) public payable nonReentrant() {
+    // @notice using Checks-Effects-Interactions
+    require(lockedProvenance, "Set Providence hashes");
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
     for (uint i = 0; i < amount; i++) {
-      _safeMint(msg.sender, mintID());
+      _safeMint(_msgSender(), mintID());
       _tokenIdCounter.increment();
     }
   }
 
+  // @notice this is the team mint function, no mint Fees in ERC20,
+  //  public onlyOwner function. More comments within code
+  // @param address _address - address to "airdropped" or team mint token
   function teamMint(address _address) public onlyOwner {
-    require(lockedProvenance, "Set Provenance hashes");
+    require(lockedProvenance, "Set Providence hashes");
     require(teamMintSize != 0, "Team minting not enabled");
     require(_tokenIdCounter.current() < mintSize, "Can not mint that many");
     require(_teamMintCounter.current() < teamMintSize, "Can not team mint anymore");
@@ -111,6 +100,8 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   }
 
   // @notice this shifts the _tokenIdCounter to proper mint number
+  // @return the tokenID number using BAYC random start point on a
+  //  a fixed number of mints
   function mintID() internal view returns (uint256) {
     return (mintStartID + _tokenIdCounter.current()) % mintSize;
   }
@@ -118,15 +109,16 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   // Function to receive ether, msg.data must be empty
   receive() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(msg.sender, msg.value);
+    emit PaymentReceived(_msgSender(), msg.value);
   }
 
   // Function to receive ether, msg.data is not empty
   fallback() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(msg.sender, msg.value);
+    emit PaymentReceived(_msgSender(), msg.value);
   }
 
+  // @notice this is a public getter for ETH blance on contract
   function getBalance() external view returns (uint) {
     return address(this).balance;
   }
@@ -142,14 +134,19 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
  */
 
   // @notice this will use internal functions to set EIP 2981
-  // found in IERC2981.sol and used by ERC2981Collections.sol
+  //  found in IERC2981.sol and used by ERC2981Collections.sol
+  // @param address _royaltyAddress - Address for all royalties to go to
+  // @param uint256 _percentage - Precentage in whole number of comission
+  //  of secondary sales
   function setRoyaltyInfo(address _royaltyAddress, uint256 _percentage) public onlyOwner {
     _setRoyalties(_royaltyAddress, _percentage);
     emit UpdatedRoyalties(_royaltyAddress, _percentage);
   }
 
   // @notice this will set the fees required to mint using
-  // publicMint(), must enter in wei. So 1 ETH = 10**18.
+  //  publicMint(), must enter in wei. So 1 ETH = 10**18.
+  // @param uint256 _newFee - fee you set, if ETH 10**18, if
+  //  an ERC20 use token's decimals in calculation
   function setMintFees(uint256 _newFee) public onlyOwner {
     uint256 oldFee = mintFees;
     mintFees = _newFee;
@@ -181,19 +178,29 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
  * also contains all overrides required for funtionality
  */
 
-  // @notice will update _baseURI() by onlyDev role
-  function setBaseURI(string memory _base) public onlyDev {
-    string memory old = base;
-    base = _base;
-    emit UpdatedBaseURI(old, base);
+  // @notice will add an address to PaymentSplitter by onlyDev role
+  // @param address newAddy - address to recieve payments
+  // @param uint newShares - number of shares they recieve
+  function addPayee(address newAddy, uint newShares) public onlyDev {
+    require(!lockedPayees, "Can not set, payees locked");
+    _addPayee(newAddy, newShares);
+  }
+
+  // @notice will lock payees on PaymentSplitter.sol
+  function lockPayees() public onlyDev {
+    require(!lockedPayees, "Can not set, payees locked");
+    lockedPayees = true;
+    emit PayeesLocked(lockedPayees);
   }
 
   // @notice will set the ContractURI for OpenSea
+  // @param string memory _contractURI - IPFS URI for contract
   function setContractURI(string memory _contractURI) public onlyDev {
     _setContractURI(_contractURI);
   }
 
   // @notice will set "team minting" by onlyDev role
+  // @param uint256 _amount - set number to mint
   function setTeamMinting(uint256 _amount) public onlyDev {
     uint256 old = teamMintSize;
     teamMintSize = _amount;
@@ -201,42 +208,44 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   }
 
   // @notice will set mint size by onlyDev role
+  // @param uint256 _amount - set number to mint
   function setMintSize(uint256 _amount) public onlyDev {
     uint256 old = mintSize;
     mintSize = _amount;
     emit UpdatedMintSize(old, mintSize);
   }
 
-  // @notice this will set the Providence Hashes
+  // @notice this will set the Provenance Hashes
   // This will also set the starting order as well!
   // Only one shot to do this, otherwise it shows as invalid
-  function setProvidence(string memory _images, string memory _json) public onlyDev {
-    require(mintSize != 0 && !lockedProvenance, "Prerequisites not met");
+  // @param string memory _images - Provenance Hash of images in sequence
+  // @param string memory _json - Provenance Hash of metadata in sequence
+  function setProvenance(string memory _images, string memory _json) public onlyDev {
+    require(lockedPayees, "Can not set, payees unlocked");
+    require(!lockedProvenance, "Already Set!");
     // This is the initial setting
     _setProvenanceImages(_images);
     _setProvenanceJSON(_json);
     // Now to psuedo-random the starting number
-    // Chainlink VRF not really needed for this at all
     // Your API should be a random before this step!
-    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, _images, _json, block.difficulty))) % mintSize;
+    mintStartID = uint(keccak256(abi.encodePacked(block.timestamp, _msgSender(), _images, _json, block.difficulty))) % mintSize;
     _setStartNumber(mintStartID);
     // @notice Locks sequence
     lockedProvenance = true;
+    emit ProvenanceLocked(lockedProvenance);
   }
 
   // @notice this will set the reveal timestamp
   // This is more for your API and not on chain...
+  // @param uint256 _time - uinx time stamp for reveal (use with API's only)
   function setRevealTimestamp(uint256 _time) public onlyDev {
     _setRevealTimestamp(_time);
   }
 
-  // @notice will add an address to PaymentSplitter by onlyDev role
-  function addPayee(address addy, uint256 shares) public onlyDev {
-    _addPayee(addy, shares);
-  }
-
   // @notice function useful for accidental ETH transfers to contract (to user address)
-  // wraps _user in payable to fix address -> address payable
+  //  wraps _user in payable to fix address -> address payable
+  // @param address _user - user address to input
+  // @param uint256 _amount - amount of ETH to transfer
   function sweepEthToAddress(address _user, uint256 _amount) public onlyDev {
     payable(_user).transfer(_amount);
   }
@@ -245,14 +254,29 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   /// Developer, these are the overrides
   ///
 
-  // @notice solidity required override for _baseURI()
+  // @notice solidity required override for _baseURI(), if you wish to
+  //  be able to set from API -> IPFS or vice versa using setBaseURI(string)
+  //  if cutting, destroy this getter, function setBaseURI(string), and 
+  //  string memory private base above
   function _baseURI() internal view override returns (string memory) {
     return base;
   }
 
   // @notice solidity required override for supportsInterface(bytes4)
-  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC165Storage, IERC165) returns (bool) {
-    return super.supportsInterface(interfaceId);
+  // @param bytes4 interfaceId - bytes4 id per interface or contract
+  //  calculated by ERC165 standards automatically
+  function supportsInterface(bytes4 interfaceId) public pure override(ERC721, IERC165) returns (bool) {
+    return (
+      interfaceId == type(IERC721).interfaceId ||
+      interfaceId == type(ERC2981Collection).interfaceId  ||
+      interfaceId == type(BAYC).interfaceId  ||
+      interfaceId == type(ContractURI).interfaceId  ||
+      interfaceId == type(IMAX721).interfaceId  ||
+      interfaceId == type(ReentrancyGuard).interfaceId ||
+      interfaceId == type(PaymentSplitter).interfaceId ||
+      interfaceId == type(DeveloperV2).interfaceId ||
+      interfaceId == type(Ownable).interfaceId
+    );
   }
 
   // @notice will return status of Minter
@@ -288,4 +312,5 @@ contract ERC721v2d1ETHCollection is ERC721, ERC2981Collection, BAYC, ContractURI
   function totalSupply() external view override(IMAX721) returns (uint256) {
     return _tokenIdCounter.current();
   }
+
 }

@@ -19,12 +19,12 @@
  * Gas estimate: 2,534,770
  *
  * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
+ * Rewritten to v2.1.1 standards, removal of ERC165Storage, msg.sender => _msgSender()
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165Storage.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
@@ -34,7 +34,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "./ERC2981.sol";
 import "./modules/PaymentSplitter.sol";
 
-contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
+contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   uint256 private mintFees;
@@ -45,20 +45,7 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Reent
   event UpdatedMintStatus(bool _old, bool _new);
   event DevSweepETH(address _sentTo, uint256 _amount);
 
-  // bytes4 constants for ERC165
-  bytes4 private constant _INTERFACE_ID_ERC721 = 0x80ac58cd;
-  bytes4 private constant _INTERFACE_ID_IERC2981 = 0x2a55205a;
-  bytes4 private constant _INTERFACE_ID_DeveloperV2 = 0xcb49d479;
-  bytes4 private constant _INTERFACE_ID_PaymentSplitter = 0x4a7f18f2;
-
-  constructor() ERC721("ERC", "721") {
-
-    // ECR165 Interfaces Supported
-    _registerInterface(_INTERFACE_ID_ERC721);
-    _registerInterface(_INTERFACE_ID_IERC2981);
-    _registerInterface(_INTERFACE_ID_DeveloperV2);
-    _registerInterface(_INTERFACE_ID_PaymentSplitter);
-  }
+  constructor() ERC721("ERC", "721") {}
 
 /***
  *    ███╗   ███╗██╗███╗   ██╗████████╗
@@ -72,35 +59,35 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Reent
   function publicMint(string memory ipfsHash, uint256 permille) public payable nonReentrant() {
     require(enableMinter, "Minter not active");
     require(msg.value == mintFees, "Wrong amount of Native Token");
-    _safeMint(msg.sender, _tokenIdCounter.current());
+    _safeMint(_msgSender(), _tokenIdCounter.current());
     _setTokenURI(_tokenIdCounter.current(), ipfsHash);
-    creators[_tokenIdCounter.current()] =  msg.sender;
-    _setRoyalties(_tokenIdCounter.current(), msg.sender, permille);
+    creators[_tokenIdCounter.current()] =  _msgSender();
+    _setRoyalties(_tokenIdCounter.current(), _msgSender(), permille);
     _tokenIdCounter.increment();
   }
 
   // allows the creator of the token to adjust royalties
   function adjustRoyalties(uint256 _tokenID, address _address, uint256 _permille) public {
-    require(msg.sender == creators[_tokenID], "You are not the creator of this NFT");
+    require(_msgSender() == creators[_tokenID], "You are not the creator of this NFT");
     _setRoyalties(_tokenID, _address, _permille);
   }
 
   // allows the creator of the token to adjust the IPFS hash
   function adjustIPFSHash(uint256 _tokenID, string memory ipfsHash) public {
-    require(msg.sender == creators[_tokenID], "You are not the creator of this NFT");
+    require(_msgSender() == creators[_tokenID], "You are not the creator of this NFT");
     _setTokenURI(_tokenID, ipfsHash);
   }
 
   // Function to receive ether, msg.data must be empty
   receive() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(msg.sender, msg.value);
+    emit PaymentReceived(_msgSender(), msg.value);
   }
 
   // Function to receive ether, msg.data is not empty
   fallback() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(msg.sender, msg.value);
+    emit PaymentReceived(_msgSender(), msg.value);
   }
 
   function getBalance() external view returns (uint) {
@@ -167,8 +154,16 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Reent
   ///
 
   // @notice solidity required override for supportsInterface(bytes4)
-  function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC165Storage, IERC165) returns (bool) {
-    return super.supportsInterface(interfaceId);
+  function supportsInterface(bytes4 interfaceId) public pure override(ERC721, IERC165) returns (bool) {
+    return (
+      interfaceId == type(IERC721).interfaceId ||
+      interfaceId == type(ERC721URIStorage).interfaceId  ||
+      interfaceId == type(ERC2981).interfaceId  ||
+      interfaceId == type(ReentrancyGuard).interfaceId ||
+      interfaceId == type(PaymentSplitter).interfaceId ||
+      interfaceId == type(DeveloperV2).interfaceId ||
+      interfaceId == type(Ownable).interfaceId
+    );
   }
 
   // @notice will return status of Minter
@@ -198,5 +193,3 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ERC165Storage, Reent
     return super.tokenURI(tokenId);
   }
 }
-
-
