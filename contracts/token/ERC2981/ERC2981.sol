@@ -14,7 +14,7 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./interface/IERC2981.sol";
+import "../../interface/IERC2981.sol";
 
 abstract contract ERC2981 is IERC2981 {
 

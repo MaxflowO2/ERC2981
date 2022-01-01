@@ -26,15 +26,15 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./token/ERC721/ERC721.sol";
+import "./token/ERC721/extensions/ERC721URIStorage.sol";
+import "./access/OwnableV2.sol";
 import "./access/DeveloperV2.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./ERC2981.sol";
+import "./token/ERC2981/ERC2981.sol";
 import "./modules/PaymentSplitter.sol";
 
-contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ReentrancyGuard, PaymentSplitter, DeveloperV2, Ownable {
+contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ReentrancyGuard, PaymentSplitter, DeveloperV2, OwnableV2 {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   uint256 private mintFees;
@@ -153,16 +153,27 @@ contract PublicMinter is ERC721, ERC721URIStorage, ERC2981, ReentrancyGuard, Pay
   /// Developer, these are the overrides
   ///
 
+
+  // @notice solidity required override for ContextV2 _msgSender()
+   function _msgSender() internal view override returns (address) {
+    super._msgSender();
+  }
+
+  // @notice solidity required override for ContextV2 _msgValue()
+   function _msgValue() internal view override returns (uint) {
+    super._msgValue();
+  }
+
   // @notice solidity required override for supportsInterface(bytes4)
   function supportsInterface(bytes4 interfaceId) public pure override(ERC721, IERC165) returns (bool) {
     return (
-      interfaceId == type(IERC721).interfaceId ||
       interfaceId == type(ERC721URIStorage).interfaceId  ||
       interfaceId == type(ERC2981).interfaceId  ||
       interfaceId == type(ReentrancyGuard).interfaceId ||
       interfaceId == type(PaymentSplitter).interfaceId ||
       interfaceId == type(DeveloperV2).interfaceId ||
-      interfaceId == type(Ownable).interfaceId
+      interfaceId == type(OwnableV2).interfaceId ||
+      super.supportsInterface(interfaceId)
     );
   }
 

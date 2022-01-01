@@ -22,7 +22,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/utils/Context.sol";
+import "../utils/ContextV2.sol";
 
 /**
  * @title PaymentSplitter
@@ -38,7 +38,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
  * function.
  */
 
-abstract contract PaymentSplitter is Context {
+abstract contract PaymentSplitter is ContextV2 {
 
   // ERC165 data
   // totalShares() => 0x3a98ef39

@@ -21,20 +21,20 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "./interface/IERC2981.sol";
+import "../../interface/IERC2981.sol";
 
-abstract contract ERC2981Collection is IERC2981 {
+abstract contract ERC2981UniqueAddressPer is IERC2981 {
 
   // ERC165
   // royaltyInfo(uint256,uint256) => 0x2a55205a
-  // ERC2981Collection => 0x2a55205a
+  // ERC2981UniqueAddressPer => 0x2a55205a
 
-  address private royaltyAddress;
+  mapping(uint256 => address) private royaltyAddress;
   uint256 private royaltyPercent;
 
   // Set to be internal function _setRoyalties
-  function _setRoyalties(address _receiver, uint256 _percentage) internal {
-    royaltyAddress = _receiver;
+  function _setRoyalties(uint256 _tokenId, address _receiver, uint256 _percentage) internal {
+    royaltyAddress[_tokenId] = _receiver;
     royaltyPercent = _percentage;
   }
 
@@ -47,7 +47,7 @@ abstract contract ERC2981Collection is IERC2981 {
     address receiver,
     uint256 royaltyAmount
   ) {
-    receiver = royaltyAddress;
+    receiver = royaltyAddress[_tokenId];
 
     // This sets percentages by price * percentage / 100
     royaltyAmount = _salePrice * royaltyPercent / 100;

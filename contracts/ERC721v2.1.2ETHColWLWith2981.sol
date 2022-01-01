@@ -21,17 +21,19 @@
  *
  * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
  * Rewritten to v2.1.1 standards, removal of ERC165Storage, msg.sender => _msgSender()
+ * Rewritten to v2.1.2 standards, adding _msgValue() and _txOrigin() to ContextV2 this effects
+ *  ERC721.sol, ERC20.sol, Ownable.sol, Developer.sol, so all bases upgraded as of 31 Dec 2021
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "./token/ERC721/ERC721.sol";
+import "./access/OwnableV2.sol";
 import "./access/DeveloperV2.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./ERC2981Collection.sol";
+import "./token/ERC2981/ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
 import "./modules/Whitelist.sol";
 import "./interface/IMAX721Whitelist.sol";
@@ -39,7 +41,7 @@ import "./modules/PaymentSplitter.sol";
 import "./modules/BAYC.sol";
 import "./modules/ContractURI.sol";
 
-contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, IMAX721Whitelist, ReentrancyGuard, Whitelist, PaymentSplitter, DeveloperV2, Ownable {
+contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, IMAX721Whitelist, ReentrancyGuard, Whitelist, PaymentSplitter, DeveloperV2, OwnableV2 {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;
@@ -84,7 +86,7 @@ contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Cont
     // @notice using Checks-Effects-Interactions
     require(lockedProvenance, "Set Providence hashes");
     require(enableMinter, "Minter not active");
-    require(msg.value == mintFees * amount, "Wrong amount of Native Token");
+    require(_msgValue() == mintFees * amount, "Wrong amount of Native Token");
     require(_tokenIdCounter.current() + amount <= mintSize, "Can not mint that many");
     if(enableWhiteList) {
       require(isWhitelist[_msgSender()], "You are not Whitelisted");
@@ -125,13 +127,13 @@ contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Cont
   // Function to receive ether, msg.data must be empty
   receive() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(_msgSender(), msg.value);
+    emit PaymentReceived(_msgSender(), _msgValue());
   }
 
   // Function to receive ether, msg.data is not empty
   fallback() external payable {
     // From PaymentSplitter.sol
-    emit PaymentReceived(_msgSender(), msg.value);
+    emit PaymentReceived(_msgSender(), _msgValue());
   }
 
   // @notice this is a public getter for ETH blance on contract
@@ -329,9 +331,8 @@ contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Cont
   // @notice solidity required override for supportsInterface(bytes4)
   // @param bytes4 interfaceId - bytes4 id per interface or contract
   //  calculated by ERC165 standards automatically
-  function supportsInterface(bytes4 interfaceId) public pure override(ERC721, IERC165) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view override(ERC721, IERC165) returns (bool) {
     return (
-      interfaceId == type(IERC721).interfaceId ||
       interfaceId == type(ERC2981Collection).interfaceId  ||
       interfaceId == type(BAYC).interfaceId  ||
       interfaceId == type(ContractURI).interfaceId  ||
@@ -341,7 +342,8 @@ contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, Cont
       interfaceId == type(Whitelist).interfaceId ||
       interfaceId == type(PaymentSplitter).interfaceId ||
       interfaceId == type(DeveloperV2).interfaceId ||
-      interfaceId == type(Ownable).interfaceId
+      interfaceId == type(OwnableV2).interfaceId ||
+      super.supportsInterface(interfaceId)
     );
   }
 

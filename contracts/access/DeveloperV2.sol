@@ -11,6 +11,7 @@
  * email: cryptobymaxflowO2@gmail.com
  *
  * Upgraded to push/pull and decline by @MaxFlowO2 on 29 Dec 2021
+ * Updated to ContextV2, and removed ERC165 calculations on 31 Dec 2021
  */
 
 // SPDX-License-Identifier: MIT
@@ -19,7 +20,7 @@
 
 pragma solidity >=0.8.0 <0.9.0;
 
-import "@openzeppelin/contracts/utils/Context.sol";
+import "../utils/ContextV2.sol";
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -34,15 +35,7 @@ import "@openzeppelin/contracts/utils/Context.sol";
  * the developer.
  */
 
-abstract contract DeveloperV2 is Context {
-
-    // ERC165
-    // developer() => 0xca4b208b
-    // renounceDeveloper() => 0xad6d9c17
-    // transferDeveloper(address) => 0xb671f4ea
-    // acceptDeveloper() => 0x2bfcf0f2
-    // declineDeveloper() => 0x31e26cfd
-    // DeveloperV2 => 0xcb49d479
+abstract contract DeveloperV2 is ContextV2 {
 
     address private _developer;
     address private _newDeveloper;
@@ -59,7 +52,6 @@ abstract contract DeveloperV2 is Context {
     /**
      * @dev Returns the address of the current developer.
      */
-    // developer() => 0xca4b208b
     function developer() public view virtual returns (address) {
         return _developer;
     }
@@ -79,16 +71,14 @@ abstract contract DeveloperV2 is Context {
      * NOTE: Renouncing developership will leave the contract without an developer,
      * thereby removing any functionality that is only available to the developer.
      */
-    // renounceDeveloper() => 0xad6d9c17
     function renounceDeveloper() public virtual onlyDev {
         _transferDeveloper(address(0));
     }
 
     /**
      * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
-     * Can only be called by the current developer.
+     * Can only be called by the current developer. Now push/pull.
      */
-    // transferDeveloper(address) => 0x64cb4edb
     function transferDeveloper(address newDeveloper) public virtual onlyDev {
         require(newDeveloper != address(0), "Developer: new developer is the zero address");
         _newDeveloper = newDeveloper;
@@ -96,9 +86,8 @@ abstract contract DeveloperV2 is Context {
 
     /**
      * @dev Accepts Transfer Developer of the contract to a new account (`newDeveloper`).
-     * Can only be called by the new developer.
+     * Can only be called by the new developer. Pull Accepted.
      */
-    // acceptDeveloper() => 0x2bfcf0f2
     function acceptDeveloper() public virtual {
         require(_newDeveloper == _msgSender(), "New Developer: new developer is the only caller");
         _transferDeveloper(_newDeveloper);
@@ -106,12 +95,20 @@ abstract contract DeveloperV2 is Context {
 
     /**
      * @dev Declines Transfer Developer of the contract to a new account (`newDeveloper`).
-     * Can only be called by the new developer.
+     * Can only be called by the new developer. Pull Declined
      */
-    // declineDeveloper() => 0x31e26cfd
     function declineDeveloper() public virtual {
         require(_newDeveloper == _msgSender(), "New Developer: new developer is the only caller");
         _newDeveloper = address(0);
+    }
+
+    /**
+     * @dev Transfers Developer of the contract to a new account (`newDeveloper`).
+     * Can only be called by the current developer. Now push only. Orginal V1 style
+     */
+    function pushDeveloper(address newDeveloper) public virtual onlyDev {
+        require(newDeveloper != address(0), "Developer: new developer is the zero address");
+        _transferDeveloper(newDeveloper);
     }
 
     /**
@@ -124,4 +121,3 @@ abstract contract DeveloperV2 is Context {
         emit DeveloperTransferred(oldDeveloper, newDeveloper);
     }
 }
-
