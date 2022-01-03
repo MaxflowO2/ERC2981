@@ -33,7 +33,7 @@ import "./token/ERC721/ERC721.sol";
 import "./access/OwnableV2.sol";
 import "./access/DeveloperV2.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./token/ERC2981/ERC2981Collection.sol";
+import "./eip/2981/ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
 import "./modules/Whitelist.sol";
 import "./interface/IMAX721Whitelist.sol";
