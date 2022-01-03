@@ -12,7 +12,11 @@
  *       ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║██╔══╝  ██╔══╝  ██╔══██╗
  *       ██║   ██║  ██║██║  ██║██║ ╚████║███████║██║     ███████╗██║  ██║
  *       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝
- *                                                                       
+ * Written by MaxFlowO2, Senior Developer and Partner of G&M² Labs
+ * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
+ * email: cryptobymaxflowO2@gmail.com
+ *
+ * Written on 02 JAN 2022
  */
 
 // SPDX-License-Identifier: MIT
@@ -20,9 +24,11 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-/**
- * @dev This is an implelemtation of ERC1155 batch transfers into ERC721
- */
+ /**
+  * @dev this is an implementation of ERC1155's batch transfer functions,
+  *  being batchTransfer() and safeBathTransfer() utilizing ERC721's built
+  *  in transfer/safeTransfer functions. Will modify later to it's own code
+  */
 
 interface IERC721BatchTransfer is IERC165 {
 
