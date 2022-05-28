@@ -25,21 +25,23 @@ import "./IERC2981.sol";
 
 abstract contract ERC2981Collection is IERC2981 {
 
-  // ERC165
-  // royaltyInfo(uint256,uint256) => 0x2a55205a
-  // ERC2981Collection => 0x2a55205a
-
   address private royaltyAddress;
-  uint256 private royaltyPercent;
+  uint256 private royaltyPermille;
+
+  event royalatiesSet(uint value, address recipient);
+  error UnauthorizedERC2981();
 
   // Set to be internal function _setRoyalties
-  function _setRoyalties(address _receiver, uint256 _percentage) internal {
+  function _setRoyalties(address _receiver, uint256 _permille) internal {
+  if (_permille > 1001 || _permille <= 0) {
+    revert UnauthorizedERC2981();
+  }
     royaltyAddress = _receiver;
-    royaltyPercent = _percentage;
+    royaltyPermille = _permille;
+    emit royalatiesSet(royaltyPermille, royaltyAddress);
   }
 
   // Override for royaltyInfo(uint256, uint256)
-  // royaltyInfo(uint256,uint256) => 0x2a55205a
   function royaltyInfo(
     uint256 _tokenId,
     uint256 _salePrice
@@ -48,8 +50,6 @@ abstract contract ERC2981Collection is IERC2981 {
     uint256 royaltyAmount
   ) {
     receiver = royaltyAddress;
-
-    // This sets percentages by price * percentage / 100
-    royaltyAmount = _salePrice * royaltyPercent / 100;
+    royaltyAmount = _salePrice * royaltyPermille / 1000;
   }
 }
