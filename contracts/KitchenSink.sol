@@ -1,28 +1,15 @@
-/***
- *    ███████╗██████╗  ██████╗███████╗██████╗  ██╗    ██╗   ██╗██████╗                
- *    ██╔════╝██╔══██╗██╔════╝╚════██║╚════██╗███║    ██║   ██║╚════██╗               
- *    █████╗  ██████╔╝██║         ██╔╝ █████╔╝╚██║    ██║   ██║ █████╔╝               
- *    ██╔══╝  ██╔══██╗██║        ██╔╝ ██╔═══╝  ██║    ╚██╗ ██╔╝██╔═══╝                
- *    ███████╗██║  ██║╚██████╗   ██║  ███████╗ ██║     ╚████╔╝ ███████╗               
- *    ╚══════╝╚═╝  ╚═╝ ╚═════╝   ╚═╝  ╚══════╝ ╚═╝      ╚═══╝  ╚══════╝               
- *                                                                                    
- *     ██████╗ ██████╗ ██╗     ██╗     ███████╗ ██████╗████████╗██╗ ██████╗ ███╗   ██╗
- *    ██╔════╝██╔═══██╗██║     ██║     ██╔════╝██╔════╝╚══██╔══╝██║██╔═══██╗████╗  ██║
- *    ██║     ██║   ██║██║     ██║     █████╗  ██║        ██║   ██║██║   ██║██╔██╗ ██║
- *    ██║     ██║   ██║██║     ██║     ██╔══╝  ██║        ██║   ██║██║   ██║██║╚██╗██║
- *    ╚██████╗╚██████╔╝███████╗███████╗███████╗╚██████╗   ██║   ██║╚██████╔╝██║ ╚████║
- *     ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚══════╝ ╚═════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
- * Written by MaxFlowO2, Senior Developer and Partner of G&M² Labs
- * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
- * email: cryptobymaxflowO2@gmail.com
+/*     +%%#-                           ##.        =+.    .+#%#+:       *%%#:    .**+-      =+
+ *   .%@@*#*:                          @@: *%-   #%*=  .*@@=.  =%.   .%@@*%*   +@@=+=%   .%##
+ *  .%@@- -=+                         *@% :@@-  #@=#  -@@*     +@-  :@@@: ==* -%%. ***   #@=*
+ *  %@@:  -.*  :.                    +@@-.#@#  =@%#.   :.     -@*  :@@@.  -:# .%. *@#   *@#*
+ * *%@-   +++ +@#.-- .*%*. .#@@*@#  %@@%*#@@: .@@=-.         -%-   #%@:   +*-   =*@*   -@%=:
+ * @@%   =##  +@@#-..%%:%.-@@=-@@+  ..   +@%  #@#*+@:      .*=     @@%   =#*   -*. +#. %@#+*@
+ * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
+ * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
  *
- * Purpose: Chain ID #1-5 OpenSea compliant contracts with ERC2981 and whitelist
- * Gas Estimate as-is: 3,571,984
- *
- * Rewritten to v2.1 standards (DeveloperV2 and ReentrancyGuard)
- * Rewritten to v2.1.1 standards, removal of ERC165Storage, msg.sender => _msgSender()
- * Rewritten to v2.1.2 standards, adding _msgValue() and _txOrigin() to ContextV2 this effects
- *  ERC721.sol, ERC20.sol, Ownable.sol, Developer.sol, so all bases upgraded as of 31 Dec 2021
+ * @title: KitchenSink.sol
+ * @author: Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
+ * @notice: Like the title, more of a "Kitchen Sink" style contract for ERC721 
  */
 
 // SPDX-License-Identifier: MIT
@@ -30,8 +17,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./token/ERC721/ERC721.sol";
-import "./access/OwnableV2.sol";
-import "./access/DeveloperV2.sol";
+import "./access/MaxAccess.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./eip/2981/ERC2981Collection.sol";
 import "./interface/IMAX721.sol";
@@ -41,7 +27,7 @@ import "./modules/PaymentSplitter.sol";
 import "./modules/BAYC.sol";
 import "./modules/ContractURI.sol";
 
-contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, IMAX721Whitelist, ReentrancyGuard, Whitelist, PaymentSplitter, DeveloperV2, OwnableV2 {
+contract ERC721v2ETHCollectionWhitelist is ERC721, ERC2981Collection, BAYC, ContractURI, IMAX721, IMAX721Whitelist, ReentrancyGuard, Whitelist, PaymentSplitter, MaxAccess {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
   Counters.Counter private _teamMintCounter;

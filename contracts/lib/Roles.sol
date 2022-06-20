@@ -1,12 +1,25 @@
-pragma solidity >= 0.8.0 <0.9.0;
-
-/**
- * @title Roles
- * @dev Library for managing addresses assigned to a Role.
- * @author OpenZeppelin, rewite by @maxflowo2 for events/gas optimization
+/*     +%%#-                           ##.        =+.    .+#%#+:       *%%#:    .**+-      =+
+ *   .%@@*#*:                          @@: *%-   #%*=  .*@@=.  =%.   .%@@*%*   +@@=+=%   .%##
+ *  .%@@- -=+                         *@% :@@-  #@=#  -@@*     +@-  :@@@: ==* -%%. ***   #@=*
+ *  %@@:  -.*  :.                    +@@-.#@#  =@%#.   :.     -@*  :@@@.  -:# .%. *@#   *@#*
+ * *%@-   +++ +@#.-- .*%*. .#@@*@#  %@@%*#@@: .@@=-.         -%-   #%@:   +*-   =*@*   -@%=:
+ * @@%   =##  +@@#-..%%:%.-@@=-@@+  ..   +@%  #@#*+@:      .*=     @@%   =#*   -*. +#. %@#+*@
+ * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
+ * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
+ *
+ * @title: Roles.sol
+ * @author: OpenZeppelin, rewrite by Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
+ * @notice: Library for MaxAcess.sol
+ * @dev: Rewritten for gas optimization, and from abstract -> library, added
+ * multiple types instead of a solo role.
  * Original source:
  * https://github.com/hiddentao/openzeppelin-solidity/blob/master/contracts/access/Roles.sol
+ *
+ * Include with 'using Roles for Roles.Role;'
  */
+
+// SPDX-License-Identifier: MIT
+pragma solidity >= 0.8.0 <0.9.0;
 
 event RoleGranted(bytes4 _type, address _user); // 0x0baaa7ab
 event RoleRevoked(bytes4 _type, address _user); // 0x6107a4a5

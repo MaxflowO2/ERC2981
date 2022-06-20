@@ -5,7 +5,7 @@
  *    ██║     ██║   ██║██║╚██╗██║   ██║   ██╔══██╗██╔══██║██║        ██║       ██║   ██║██╔══██╗██║
  *    ╚██████╗╚██████╔╝██║ ╚████║   ██║   ██║  ██║██║  ██║╚██████╗   ██║       ╚██████╔╝██║  ██║██║
  *     ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝   ╚═╝        ╚═════╝ ╚═╝  ╚═╝╚═╝
- * Written by MaxFlowO2, Senior Developer and Partner of G&M² Labs
+ * @author: @MaxFlowO2
  * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
  * email: cryptobymaxflowO2@gmail.com
  *
@@ -23,10 +23,6 @@ import "../interface/IContractURI.sol";
 
 abstract contract ContractURI is IContractURI {
 
-  // ERC165
-  // contractURI() => 0xe8a3d485
-  // IContractURI => 0xe8a3d485
-
   event ContractURIChange(string _old, string _new);
 
   string private thisContractURI;
@@ -40,14 +36,18 @@ abstract contract ContractURI is IContractURI {
     emit ContractURIChange(old, thisContractURI);
   }
 
+  // @notice this clears the contractURI, set to internal
+  function _clearContractURI() internal {
+    string memory old = thisContractURI;
+    delete thisContractURI;
+    emit ContractURIChange(old, thisContractURI);
+  }
+
   // @notice contractURI() called for retreval of
   //  OpenSea style collections pages
   // @return - string thisContractURI
-  // ERC165 datum contractURI() => 0xe8a3d485
   function contractURI() external view override(IContractURI) returns (string memory) {
     return thisContractURI;
   }
 
 }
-
-

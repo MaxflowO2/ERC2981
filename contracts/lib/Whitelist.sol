@@ -1,14 +1,15 @@
-/***
- *    ██╗    ██╗██╗  ██╗██╗████████╗███████╗██╗     ██╗███████╗████████╗
- *    ██║    ██║██║  ██║██║╚══██╔══╝██╔════╝██║     ██║██╔════╝╚══██╔══╝
- *    ██║ █╗ ██║███████║██║   ██║   █████╗  ██║     ██║███████╗   ██║   
- *    ██║███╗██║██╔══██║██║   ██║   ██╔══╝  ██║     ██║╚════██║   ██║   
- *    ╚███╔███╔╝██║  ██║██║   ██║   ███████╗███████╗██║███████║   ██║   
- *     ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚═╝╚══════╝   ╚═╝   
- * @title Whitelist
- * @author @MaxFlowO2 on Twitter/GitHub
- *  Written on 12 Jan 2022, post Laid Back Llamas, aka LLAMA TECH!
- * @dev Provides a whitelist capability that can be added to and removed easily. With
+/*     +%%#-                           ##.        =+.    .+#%#+:       *%%#:    .**+-      =+
+ *   .%@@*#*:                          @@: *%-   #%*=  .*@@=.  =%.   .%@@*%*   +@@=+=%   .%##
+ *  .%@@- -=+                         *@% :@@-  #@=#  -@@*     +@-  :@@@: ==* -%%. ***   #@=*
+ *  %@@:  -.*  :.                    +@@-.#@#  =@%#.   :.     -@*  :@@@.  -:# .%. *@#   *@#*
+ * *%@-   +++ +@#.-- .*%*. .#@@*@#  %@@%*#@@: .@@=-.         -%-   #%@:   +*-   =*@*   -@%=:
+ * @@%   =##  +@@#-..%%:%.-@@=-@@+  ..   +@%  #@#*+@:      .*=     @@%   =#*   -*. +#. %@#+*@
+ * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
+ * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
+ *
+ * @title: Whitelist.sol
+ * @author: @MaxFlowO2 on bird app/GitHub
+ * @notice: Provides a whitelist capability that can be added to and removed easily. With
  *  a modified version of Countes.sol from openzeppelin 4.4.1 you can track numbers of who's
  *  on the whitelist and who's been removed from the whitelist, showing clear statistics of
  *  your contract's whitelist usage.
@@ -28,6 +29,8 @@ library Whitelist {
   event WhiteListChanged(bool _old, bool _new, address _address);
   event WhiteListStatus(bool _old, bool _new);
 
+  error Error(string _reason);
+
   struct List {
     // These variables should never be directly accessed by users of the library: interactions must be restricted to
     // the library's function. As of Solidity v0.5.2, this cannot be enforced, though there is a proposal to add
@@ -40,7 +43,11 @@ library Whitelist {
   }
 
   function add(List storage list, address _address) internal {
-    require(!list._list[_address], "Whitelist: Address already whitelisted.");
+    if (list._list[_address]) {
+      revert Error({
+        _reason : "Whitelist: Address already whitelisted."
+      });
+    }
     // since now all previous values are false no need for another variable
     // and add them to the list!
     list._list[_address] = true;
@@ -51,7 +58,11 @@ library Whitelist {
   }
 
   function remove(List storage list, address _address) internal {
-    require(list._list[_address], "Whitelist: Address already not whitelisted.");
+    if (!list._list[_address]) {
+      revert Error({
+        _reason : "Whitelist: Address already not whitelisted."
+      });
+    }
     // since now all previous values are true no need for another variable
     // and remove them from the list!
     list._list[_address] = false;
@@ -62,19 +73,31 @@ library Whitelist {
   }
 
   function enable(List storage list) internal {
-    require(!list.enabled, "Whitelist: Whitelist already enabled.");
+    if (list.enabled) {
+      revert Error({
+        _reason : "Whitelist: Whitelist already enabled."
+      });
+    }
     list.enabled = true;
     emit WhiteListStatus(false, list.enabled);
   }
 
   function disable(List storage list) internal {
-    require(list.enabled, "Whitelist: Whitelist already enabled.");
+    if (!list.enabled) {
+      revert Error({
+        _reason : "Whitelist: Whitelist already enabled."
+      });
+    }
     list.enabled = false;
     emit WhiteListStatus(true, list.enabled);
   }
 
   function setEnd(List storage list, uint newEnd) internal {
-    require(list.end != newEnd, "Whitelist: End already set to that value.");
+    if (list.end == newEnd) {
+      revert Error({
+        _reason : "Whitelist: End already set to that value."
+      });
+    }
     uint old = list.end;
     list.end = newEnd;
     emit WhiteListEndChanged(old, list.end);

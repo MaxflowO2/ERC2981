@@ -29,25 +29,44 @@ abstract contract ERC2981Collection is IERC2981 {
   uint256 private royaltyPermille;
 
   event royalatiesSet(uint value, address recipient);
-  error UnauthorizedERC2981();
+  error Unauthorized();
 
-  // Set to be internal function _setRoyalties
-  function _setRoyalties(address _receiver, uint256 _permille) internal {
-  if (_permille > 1001 || _permille <= 0) {
-    revert UnauthorizedERC2981();
+  // @dev to set roaylties on contract via EIP 2891
+  // @param _receiver, address of recipient
+  // @param _permille, permille xx.x -> xxx value
+  function _setRoyalties(
+    address _receiver
+  , uint256 _permille
+  ) internal {
+  if (_permille > 1001 || _permille == 0) {
+    revert Unauthorized();
   }
     royaltyAddress = _receiver;
     royaltyPermille = _permille;
     emit royalatiesSet(royaltyPermille, royaltyAddress);
   }
 
-  // Override for royaltyInfo(uint256, uint256)
+  // @dev to remove royalties from contract
+  function _removeRoyalties() internal {
+    delete royaltyAddress;
+    delete royaltyPermille;
+    emit royalatiesSet(royaltyPermille, royaltyAddress);
+  }
+
+  // @dev Override for royaltyInfo(uint256, uint256)
+  // @param _tokenId, uint of token ID to be checked
+  // @param _salePrice, uint of amount of sale
+  // @return receiver, address of recipient
+  // @return royaltyAmount, amount royalties recieved
   function royaltyInfo(
-    uint256 _tokenId,
-    uint256 _salePrice
-  ) external view override(IERC2981) returns (
-    address receiver,
-    uint256 royaltyAmount
+    uint256 _tokenId
+  , uint256 _salePrice
+  ) external
+    view
+    override(IERC2981)
+    returns (
+    address receiver
+  , uint256 royaltyAmount
   ) {
     receiver = royaltyAddress;
     royaltyAmount = _salePrice * royaltyPermille / 1000;
