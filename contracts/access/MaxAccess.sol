@@ -117,7 +117,7 @@ abstract contract MaxAccess is IOwner, IDeveloper, ContextV2 {
     contractRole.add(DEVS, newDeveloper);
   }
 
-  function supportsInterface(bytes4 interfaceId) public view override(IOwner, IDeveloper, IERC165) returns (bool) {
+  function supportsInterface(bytes4 interfaceId) public view override(IERC165) returns (bool) {
     return (
       interfaceId == type(IOwner).interfaceId  ||
       interfaceId == type(IDeveloper).interfaceId  ||
