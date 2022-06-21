@@ -1,14 +1,17 @@
-/***
- *     ██████╗ ██████╗ ██╗   ██╗███╗   ██╗████████╗███████╗██████╗ ███████╗
- *    ██╔════╝██╔═══██╗██║   ██║████╗  ██║╚══██╔══╝██╔════╝██╔══██╗██╔════╝
- *    ██║     ██║   ██║██║   ██║██╔██╗ ██║   ██║   █████╗  ██████╔╝███████╗
- *    ██║     ██║   ██║██║   ██║██║╚██╗██║   ██║   ██╔══╝  ██╔══██╗╚════██║
- *    ╚██████╗╚██████╔╝╚██████╔╝██║ ╚████║   ██║   ███████╗██║  ██║███████║
- *     ╚═════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚══════╝
- * @title CountersV2
- * @author Matt Condon (@shrugs), and @MaxFlowO2 (edits)
- * @dev Provides counters that can only be incremented, decremented, reset or set. This can be used e.g. to track the number
- * of elements in a mapping, issuing ERC721 ids, or counting request ids.
+/*     +%%#-                           ##.        =+.    .+#%#+:       *%%#:    .**+-      =+
+ *   .%@@*#*:                          @@: *%-   #%*=  .*@@=.  =%.   .%@@*%*   +@@=+=%   .%##
+ *  .%@@- -=+                         *@% :@@-  #@=#  -@@*     +@-  :@@@: ==* -%%. ***   #@=*
+ *  %@@:  -.*  :.                    +@@-.#@#  =@%#.   :.     -@*  :@@@.  -:# .%. *@#   *@#*
+ * *%@-   +++ +@#.-- .*%*. .#@@*@#  %@@%*#@@: .@@=-.         -%-   #%@:   +*-   =*@*   -@%=:
+ * @@%   =##  +@@#-..%%:%.-@@=-@@+  ..   +@%  #@#*+@:      .*=     @@%   =#*   -*. +#. %@#+*@
+ * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
+ * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
+ *
+ * @title: CountersV2.sol
+ * @author Matt Condon (@shrugs), Edits by Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
+ * @dev Provides counters that can only be incremented, decremented, reset or set. 
+ * This can be used e.g. to track the number of elements in a mapping, issuing ERC721 ids
+ * or counting request ids.
  *
  * Edited by @MaxFlowO2 for more NFT functionality on 13 Jan 2022
  * added .set(uint) so if projects need to start at say 1 or some random number they can
@@ -18,12 +21,11 @@
  */
 
 // SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0 <0.9.0;
 
 library CountersV2 {
 
-  error NegativeNumber();
+  error Error(string _reason);
 
   event CounterNumberChangedTo(uint _number);
 
@@ -40,17 +42,19 @@ library CountersV2 {
 
   function increment(Counter storage counter) internal {
     unchecked {
-      counter._value += 1;
+      ++counter._value;
     }
   }
 
   function decrement(Counter storage counter) internal {
     uint256 value = counter._value;
     if (value == 0) {
-      revert NegativeNumber();
+      revert Error({
+        _reason : "CountersV2: No negatives in uints"
+      });
     }
     unchecked {
-      counter._value = value - 1;
+      --counter._value;
     }
   }
 

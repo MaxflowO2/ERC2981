@@ -7,9 +7,9 @@
  * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
  * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
  *
- * @title: IWhitelist.sol
+ * @title: IMAX721.sol
  * @author: Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
- * @notice: Interface for WhitelistV2.sol
+ * @notice: Interface for UX/UI
  */
 
 // SPDX-License-Identifier: MIT
@@ -17,51 +17,58 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
-interface IWhitelist is IERC165 {
+///
+/// @dev Interface for @MaxFlowO2's Contracts
+///
 
-  // @dev will return user status on whitelist
-  // @return - bool if whitelist is enabled or not
-  // @param myAddress - any user account address, EOA or contract
-  function myWhitelistStatus(
-    address myAddress
-  ) external
-    view
-    returns (bool);
+interface IMAX721 is IERC165 {
 
-  // @dev will return status of whitelist
-  // @return - bool if whitelist is enabled or not
-  function whitelistStatus()
+  // @dev will return status of Minter
+  // @return - bool of active or not
+  function minterStatus() 
     external
     view
     returns (bool);
 
-  // @dev will return whitelist end (quantity or time)
-  // @return - uint of either number of whitelist mints or
-  //  a timestamp
-  function whitelistEnd()
+  // @dev will return minting fees
+  // @return - uint of mint costs in wei
+  function minterFees()
     external
     view
     returns (uint);
 
-  // @dev will return totat on whitelist
-  // @return - uint from CountersV2.Count
-  function TotalOnWhitelist()
+  // @dev will return maximum mint capacity
+  // @return - uint of maximum mints allowed
+  function minterMaximumCapacity()
     external
     view
     returns (uint);
 
-  // @dev will return totat used on whitelist
-  // @return - uint from CountersV2.Count
-  function TotalWhiteListUsed()
+  // @dev will return maximum "team minting" capacity
+  // @return - uint of maximum airdrops or team mints allowed
+  function minterMaximumTeamMints()
     external
     view
     returns (uint);
 
-  // @dev will return totat used on whitelist
-  // @return - uint aka xxxx = xx.xx%
-  function WhitelistEfficiency()
+  // @dev will return "team mints" left
+  // @return - uint of remaing airdrops or team mints
+  function minterTeamMintsRemaining()
     external
     view
     returns (uint);
 
+  // @dev will return "team mints" count
+  // @return - uint of airdrops or team mints done
+  function minterTeamMintsCount()
+    external
+    view
+    returns (uint);
+
+  // @dev: will return total supply for mint
+  // @return: uint for this mint
+  function totalSupply()
+    external
+    view
+    returns (uint256);
 }

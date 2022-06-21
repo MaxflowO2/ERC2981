@@ -9,10 +9,7 @@
  *
  * @title: Whitelist.sol
  * @author: @MaxFlowO2 on bird app/GitHub
- * @notice: Provides a whitelist capability that can be added to and removed easily. With
- *  a modified version of Countes.sol from openzeppelin 4.4.1 you can track numbers of who's
- *  on the whitelist and who's been removed from the whitelist, showing clear statistics of
- *  your contract's whitelist usage.
+ * @notice: Provides a whitelist capability that can be added to and removed easily.
  *
  * Include with 'using Whitelist for Whitelist.List;'
  */

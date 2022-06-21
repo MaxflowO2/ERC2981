@@ -1,21 +1,15 @@
-/***
- *    ██████╗  █████╗ ██╗   ██╗███╗   ███╗███████╗███╗   ██╗████████╗
- *    ██╔══██╗██╔══██╗╚██╗ ██╔╝████╗ ████║██╔════╝████╗  ██║╚══██╔══╝
- *    ██████╔╝███████║ ╚████╔╝ ██╔████╔██║█████╗  ██╔██╗ ██║   ██║   
- *    ██╔═══╝ ██╔══██║  ╚██╔╝  ██║╚██╔╝██║██╔══╝  ██║╚██╗██║   ██║   
- *    ██║     ██║  ██║   ██║   ██║ ╚═╝ ██║███████╗██║ ╚████║   ██║   
- *    ╚═╝     ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝╚══════╝╚═╝  ╚═══╝   ╚═╝   
- *                                                                   
- *    ███████╗██████╗ ██╗     ██╗████████╗████████╗███████╗██████╗   
- *    ██╔════╝██╔══██╗██║     ██║╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗  
- *    ███████╗██████╔╝██║     ██║   ██║      ██║   █████╗  ██████╔╝  
- *    ╚════██║██╔═══╝ ██║     ██║   ██║      ██║   ██╔══╝  ██╔══██╗  
- *    ███████║██║     ███████╗██║   ██║      ██║   ███████╗██║  ██║  
- *    ╚══════╝╚═╝     ╚══════╝╚═╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝  
- * This is a re-write of @openzeppelin/contracts/finance/PaymentSplitter.sol
- * Rewritten by MaxFlowO2
- * Follow me on https://github.com/MaxflowO2 or Twitter @MaxFlowO2
- * email: cryptobymaxflowO2@gmail.com
+/*     +%%#-                           ##.        =+.    .+#%#+:       *%%#:    .**+-      =+
+ *   .%@@*#*:                          @@: *%-   #%*=  .*@@=.  =%.   .%@@*%*   +@@=+=%   .%##
+ *  .%@@- -=+                         *@% :@@-  #@=#  -@@*     +@-  :@@@: ==* -%%. ***   #@=*
+ *  %@@:  -.*  :.                    +@@-.#@#  =@%#.   :.     -@*  :@@@.  -:# .%. *@#   *@#*
+ * *%@-   +++ +@#.-- .*%*. .#@@*@#  %@@%*#@@: .@@=-.         -%-   #%@:   +*-   =*@*   -@%=:
+ * @@%   =##  +@@#-..%%:%.-@@=-@@+  ..   +@%  #@#*+@:      .*=     @@%   =#*   -*. +#. %@#+*@
+ * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
+ * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
+ *
+ * @title: PaymentSplitterV2.sol
+ * @author: OG was OZ, rewritten by Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
+ * @notice: Updated to add/subtract payees
  */
 
 // SPDX-License-Identifier: MIT
@@ -44,6 +38,8 @@ abstract contract PaymentSplitterV2 is ContextV2 {
   event PayeeAdded(address account, uint256 shares);
   event PaymentReleased(address to, uint256 amount);
   event PaymentReceived(address from, uint256 amount);
+  event PayeeRemoved(address account, uint256 shares);
+  event PayeesReset();
 
   error Error(string _reason); // 0x08c379a0
 
@@ -78,35 +74,35 @@ abstract contract PaymentSplitterV2 is ContextV2 {
   /**
    * @dev Getter for the total shares held by payees.
    */
-  function totalShares() public view returns (uint256) {
+  function totalShares() external view returns (uint256) {
     return _totalShares;
   }
 
   /**
    * @dev Getter for the total amount of Ether already released.
    */
-  function totalReleased() public view returns (uint256) {
+  function totalReleased() external view returns (uint256) {
     return _totalReleased;
   }
 
   /**
    * @dev Getter for the amount of shares held by an account.
    */
-  function shares(address account) public view returns (uint256) {
+  function shares(address account) external view returns (uint256) {
     return _shares[account];
   }
 
   /**
    * @dev Getter for the amount of Ether already released to a payee.
    */
-  function released(address account) public view returns (uint256) {
+  function released(address account) external view returns (uint256) {
     return _released[account];
   }
 
   /**
    * @dev Getter for the address of the payee number `index`.
    */
-  function payee(uint256 index) public view returns (address) {
+  function payee(uint256 index) external view returns (address) {
     return _payees[index];
   }
 
@@ -115,7 +111,7 @@ abstract contract PaymentSplitterV2 is ContextV2 {
    * total shares and their previous withdrawals.
    */
   // This function was updated from "account" to _msgSender()
-  function claim() public virtual {
+  function claim() external virtual {
     address check = _msgSender();
 
     if (_shares[check] = 0) {
@@ -166,5 +162,61 @@ abstract contract PaymentSplitterV2 is ContextV2 {
     _totalShares = _totalShares + shares_;
 
     emit PayeeAdded(account, shares_);
+  }
+
+  /**
+   * @dev finds index in array
+   * @param account The address of the payee
+   */
+  function _findIndex(address account) internal returns (uint index) {
+    max = _payees.length;
+    for (uint i = 0; i < max;) {
+      if (_payees[i] == account) {
+        index = i;
+      }
+      unchecked { ++i; }
+    }
+  }
+
+  /**
+   * @dev Remove a payee to the contract.
+   * @param account The address of the payee to remove.
+   * @notice: leaves all payment data in the contract incase something was claimed
+   */
+  function _removePayee(address account) internal {
+    if (account == address(0)) {
+      revert Error({
+        _reason: "PaymentSplitter: account is the zero address"
+      });
+    } 
+
+    // This finds the payee in the array _payees and removes it
+    uint remove = _findIndex(account);
+    address last = _payees.length - 1;
+    _payees[remove] = last;
+    _payees.pop();
+
+    uint removeTwo = _shares[account];
+    _shares[account] = 0;
+    _totalShares = _totalShares - removeTwo;
+
+    emit PayeeRemoved(account, removeTwo);
+  }
+
+  /**
+   * @dev clears all data in PaymentSplitterV2
+   * @notice: leaves all payment data in the contract incase something was claimed
+   */
+  function _clearAll() internal {
+    max = _payees.length;
+    for (uint i = 0; i < max;) {
+      address account = _payees[i];
+      uint removeTwo = _shares[account];
+      _shares[account] = 0;
+      unchecked { ++i; }
+    }
+    delete _totalShares;
+    delete _payees;
+    emit PayeesReset();
   }
 }

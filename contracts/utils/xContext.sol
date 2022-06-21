@@ -7,15 +7,16 @@
  * @@#  +@*   #@#  +@@. -+@@+#*@% =#:    #@= :@@-.%#      -=.  :   @@# .*@*  =@=  :*@:=@@-:@+
  * -#%+@#-  :@#@@+%++@*@*:=%+..%%#=      *@  *@++##.    =%@%@%%#-  =#%+@#-   :*+**+=: %%++%*
  *
- * @title: ContextV2.sol
+ * @title: xContext.sol
  * @author: Max Flow O2 -> @MaxFlowO2 on bird app/GitHub
- * @notice: minor upgrade to OZ's Context.sol wrapping msg.Value/tx.Origin. Auditors
- *  hate this for some odd reason but... if you snap some magic with Address.sol you
- *  can make all contracts mint to tx.origin. Very useful in xContext.sol
+ * @notice: crosschain edition of Context.sol... needed seldomly but very useful
  */
 
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0 <0.9.0;
+
+import "./ContextV2";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -28,10 +29,17 @@ pragma solidity >=0.8.0 <0.9.0;
  * This contract is only required for intermediate, library-like contracts.
  */
 
-abstract contract ContextV2 {
+abstract contract xContext is ContextV2 {
+  using Address for address;
 
   function _msgSender() internal view virtual returns (address) {
-    return msg.sender;
+    if (msg.sender.isContract()) {
+      return tx.origin;
+    } else if (msg.sender != tx.origin) {
+      return tx.origin;
+    } else {
+      return msg.sender;
+    }
   }
 
   function _msgData() internal view virtual returns (bytes calldata) {
